@@ -55,23 +55,17 @@ class Pawn(Piece):
         # Kiểm tra bắt tốt qua đường
         if board.en_passant_target_square is not None:
             en_passant_square = board.en_passant_target_square
+            target_x, target_y = en_passant_square.pos
 
-            en_passant_left = (en_passant_square.x - 1, en_passant_square.y)
-            en_passant_right = (en_passant_square.x + 1, en_passant_square.y)
-            
             if self.color == 'white':
-                if en_passant_left == (self.x, self.y - 1):
-                    output.append(en_passant_left)
-                elif en_passant_right == (self.x, self.y - 1):
-                    output.append(en_passant_right)
+                if (target_x - 1, target_y - 1) == (self.x, self.y) or (target_x + 1, target_y - 1) == (self.x, self.y):
+                    output.append(en_passant_square)
             elif self.color == 'black':
-                if en_passant_left == (self.x, self.y + 1):
-                    output.append(en_passant_left)
-                elif en_passant_right == (self.x, self.y + 1):
-                    output.append(en_passant_right)
+                if (target_x - 1, target_y + 1) == (self.x, self.y) or (target_x + 1, target_y + 1) == (self.x, self.y):
+                    output.append(en_passant_square)
 
         return output
-
+    
     def promote(self, board):
         if (self.color == 'white' and self.y == 0) or (self.color == 'black' and self.y == 7):
             promoted_piece = Queen((self.x, self.y), self.color, board)
