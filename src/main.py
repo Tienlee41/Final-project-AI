@@ -31,14 +31,14 @@ def draw_start_menu():
     # Vẽ nút "2 player"
     human_button = pygame.Rect((WINDOW_SIZE[0] // 2) - 100, 250, 200, 50)
     pygame.draw.rect(screen, (200, 200, 200), human_button)
-    human_text = font.render('2 player', True, (0, 0, 0))
+    human_text = font.render('Player vs Player', True, (0, 0, 0))
     human_text_rect = human_text.get_rect(center=human_button.center)
     screen.blit(human_text, human_text_rect)
 
     # Vẽ nút "1 player"
     ai_button = pygame.Rect((WINDOW_SIZE[0] // 2) - 100, 350, 200, 50)
     pygame.draw.rect(screen, (200, 200, 200), ai_button)
-    ai_text = font.render('1 player', True, (0, 0, 0))
+    ai_text = font.render('Player vs Computer', True, (0, 0, 0))
     ai_text_rect = ai_text.get_rect(center=ai_button.center)
     screen.blit(ai_text, ai_text_rect)
 
@@ -118,7 +118,7 @@ def choose_man_side():
                         choosing_side = False
     
 
-def man_vs_man():
+def player_vs_player():
     running = True
     while running:
         mx, my = pygame.mouse.get_pos()
@@ -141,7 +141,7 @@ def man_vs_man():
                 print(row)
             print()
     
-def man_vs_computer():
+def player_vs_computer():
     global human_turn  # Thêm dòng này để sử dụng biến human_turn từ phạm vi toàn cục
     running = True
     while running:
@@ -154,10 +154,6 @@ def man_vs_computer():
                 if human_turn and event.button == 1:
                     board.handle_click(mx, my)
                     human_turn = False
-                else:
-                    next_move = machine.get_next_move(board.get_board_state())
-                    board.handle_click(next_move[0] * board.tile_width, next_move[1] * board.tile_height)
-                    human_turn = True
         if board.is_in_checkmate('black'): # If black is in checkmate
             print('White wins!')
         elif board.is_in_checkmate('white'): # If white is in checkmate
@@ -195,12 +191,12 @@ def main():
                     mx, my = pygame.mouse.get_pos()
                     # Kiểm tra xem người dùng có nhấn vào nút "2 player" không
                     if 250 <= my <= 300:
-                        man_vs_man()
+                        player_vs_player()
                         draw(screen)
                     # Kiểm tra xem người dùng có nhấn vào nút "1 player" không
                     elif 350 <= my <= 400:
                         choose_man_side()
-                        man_vs_computer()
+                        player_vs_computer()
                         draw(screen)
                     # Kiểm tra xem người dùng có nhấn vào nút "Quit" không
                     elif 450 <= my <= 500:
