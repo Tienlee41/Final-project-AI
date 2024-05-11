@@ -140,10 +140,6 @@ def man_vs_man():
             for row in board.get_board_state():
                 print(row)
             print()
-    for i in board_states:
-        for row in i:
-            print(row)
-        print()
     
 def man_vs_computer():
     global human_turn  # Thêm dòng này để sử dụng biến human_turn từ phạm vi toàn cục
@@ -178,10 +174,6 @@ def man_vs_computer():
             for row in board.get_board_state():
                 print(row)
             print()
-    for i in board_states:
-        for row in i:
-            print(row)
-        print()
 
 def main():
     pygame.init()
