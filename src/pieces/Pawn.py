@@ -8,7 +8,7 @@ class Pawn(Piece):
 
         img_path = 'res/images/' + color[0] + '_pawn.png'
         self.img = pygame.image.load(img_path)
-        self.img = pygame.transform.scale(self.img, (board.tile_width - 35, board.tile_height - 35))
+        self.img = pygame.transform.scale(self.img, (board.tile_width - 20, board.tile_height - 20))
 
         self.notation = ' '
 
