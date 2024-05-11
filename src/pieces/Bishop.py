@@ -1,6 +1,6 @@
 import pygame
 
-from Piece import Piece
+from pieces.Piece import Piece
 
 class Bishop(Piece):
 	def __init__(self, pos, color, board):
