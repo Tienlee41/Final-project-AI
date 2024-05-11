@@ -46,6 +46,31 @@ def draw(display):
 	board.draw(display)
 	pygame.display.update()
 
+def play_with_human():
+    running_game = True
+    while running_game:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running_game = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:  # Nút trái chuột
+                    mx, my = pygame.mouse.get_pos()
+                    square_clicked = check_square_clicked(mx, my)
+        draw(screen)
+
+
+def play_with_computer():
+    running_game = True
+    while running_game:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running_game = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:  # Nút trái chuột
+                    mx, my = pygame.mouse.get_pos()
+                    square_clicked = check_square_clicked(mx, my)
+        draw(screen)
+
 def main():
     running = True
     draw_start_menu()
@@ -60,10 +85,12 @@ def main():
                     # Kiểm tra xem người dùng có nhấn vào nút "Chơi với người" không
                     if 250 <= my <= 300:
                         #code chơi với người
+                        play_with_human()
                         draw(screen)
                     # Kiểm tra xem người dùng có nhấn vào nút "Chơi với máy" không
                     elif 350 <= my <= 400:
                         #code chơi với máy
+                        play_with_computer()
                         draw(screen)
                     # Kiểm tra xem người dùng có nhấn vào nút "Thoát" không
                     elif 450 <= my <= 500:
