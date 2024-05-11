@@ -1,6 +1,6 @@
 import pygame
 
-from src.Piece import Piece
+from pieces.Piece import Piece
 
 class Rook(Piece):
 	def __init__(self, pos, color, board):
