@@ -7,6 +7,9 @@ from pieces.Knight import Knight
 from pieces.Queen import Queen
 from pieces.King import King
 from pieces.Pawn import Pawn
+#from model.machine import Machine
+#from model.machine import Machine
+
 
 # Game state checker
 class Board:
