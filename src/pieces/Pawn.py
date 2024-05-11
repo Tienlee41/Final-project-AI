@@ -58,10 +58,12 @@ class Pawn(Piece):
             target_x, target_y = en_passant_square.pos
 
             if self.color == 'white':
-                if (target_x - 1, target_y - 1) == (self.x, self.y) or (target_x + 1, target_y - 1) == (self.x, self.y):
+                # Kiểm tra xem ô mục tiêu cho en passant có nằm ở bên trái hoặc bên phải của quân tốt không
+                if (target_x - 1, target_y) == (self.x, self.y - 1) or (target_x + 1, target_y) == (self.x, self.y - 1):
                     output.append(en_passant_square)
             elif self.color == 'black':
-                if (target_x - 1, target_y + 1) == (self.x, self.y) or (target_x + 1, target_y + 1) == (self.x, self.y):
+                # Kiểm tra xem ô mục tiêu cho en passant có nằm ở bên trái hoặc bên phải của quân tốt không
+                if (target_x - 1, target_y) == (self.x, self.y + 1) or (target_x + 1, target_y) == (self.x, self.y + 1):
                     output.append(en_passant_square)
 
         return output

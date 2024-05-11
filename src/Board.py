@@ -142,34 +142,9 @@ class Board:
 					self.selected_piece = clicked_square.occupying_piece
 		elif self.selected_piece.move(self, clicked_square):
 			self.turn = 'white' if self.turn == 'black' else 'black'
-			# Kiểm tra nếu di chuyển là tốt di chuyển 2 ô
-			if isinstance(self.selected_piece, Pawn) and abs(self.selected_piece.y - clicked_square.y) == 2:
-				# Thiết lập ô mục tiêu cho en passant
-				self.set_en_passant_target_square(clicked_square)
-			else:
-				# Nếu không phải tốt di chuyển 2 ô, xóa ô mục tiêu cho en passant
-				self.en_passant_target_square = None
-
-			# Kiểm tra nếu ô đích là ô mục tiêu cho en passant và là nước đi hợp lệ để bắt tốt qua đường
-			if self.en_passant_target_square == clicked_square:
-				target_x, target_y = clicked_square.pos
-				if self.turn == 'white':
-					target_y += 1
-				else:
-					target_y -= 1
-
-				target_square = self.get_square_from_pos((target_x, target_y))
-
-				# Kiểm tra xem ô mục tiêu có tốt đối phương không và có đúng là tốt vừa di chuyển 2 ô không
-				if target_square.occupying_piece is not None and isinstance(target_square.occupying_piece, Pawn):
-					# Bắt tốt qua đường
-					self.remove_piece(target_square.occupying_piece)
-					target_square.occupying_piece = None
-
 		elif clicked_square.occupying_piece is not None:
 			if clicked_square.occupying_piece.color == self.turn:
 				self.selected_piece = clicked_square.occupying_piece
-
 
 	def is_in_check(self, color, board_change=None): # board_change = [(x1, y1), (x2, y2)]
 		output = False
