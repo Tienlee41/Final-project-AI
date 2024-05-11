@@ -17,6 +17,7 @@ human_turn = True
 board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],player_side)
 
 font = pygame.font.Font(None, 36)
+title_font = pygame.font.Font(None, 86)
 
 background_image = pygame.image.load("res/images/background.png")
 background_image = pygame.transform.scale(background_image, WINDOW_SIZE)
@@ -24,26 +25,26 @@ background_image = pygame.transform.scale(background_image, WINDOW_SIZE)
 def draw_start_menu():
     screen.blit(background_image, (0, 0))
 
-    title_text = font.render('Chess', True, (255, 255, 255))
-    title_rect = title_text.get_rect(center=(WINDOW_SIZE[0] // 2, 100))
+    title_text = title_font.render('Chess', True, (255, 255, 255))
+    title_rect = title_text.get_rect(center=(WINDOW_SIZE[0] // 2, 125))
     screen.blit(title_text, title_rect)
 
     # Vẽ nút "2 player"
-    human_button = pygame.Rect((WINDOW_SIZE[0] // 2) - 100, 250, 200, 50)
+    human_button = pygame.Rect((WINDOW_SIZE[0] // 2) - 125, 250, 250, 50)
     pygame.draw.rect(screen, (200, 200, 200), human_button)
     human_text = font.render('Player vs Player', True, (0, 0, 0))
     human_text_rect = human_text.get_rect(center=human_button.center)
     screen.blit(human_text, human_text_rect)
 
     # Vẽ nút "1 player"
-    ai_button = pygame.Rect((WINDOW_SIZE[0] // 2) - 100, 350, 200, 50)
+    ai_button = pygame.Rect((WINDOW_SIZE[0] // 2) - 125, 350, 250, 50)
     pygame.draw.rect(screen, (200, 200, 200), ai_button)
     ai_text = font.render('Player vs Computer', True, (0, 0, 0))
     ai_text_rect = ai_text.get_rect(center=ai_button.center)
     screen.blit(ai_text, ai_text_rect)
 
     # Vẽ nút "Quit"
-    exit_button = pygame.Rect((WINDOW_SIZE[0] // 2) - 100, 450, 200, 50)
+    exit_button = pygame.Rect((WINDOW_SIZE[0] // 2) - 125, 450, 250, 50)
     pygame.draw.rect(screen, (200, 200, 200), exit_button)
     exit_text = font.render('Quit', True, (0, 0, 0))
     exit_text_rect = exit_text.get_rect(center=exit_button.center)
@@ -59,7 +60,7 @@ def draw(display):
 	pygame.display.update()
 
 def choose_man_side():
-    global human_turn
+    global human_turn, board
     choosing_side = True
     
     background_image = pygame.image.load("res/images/background.png")  # Thay đổi đường dẫn tới hình nền của bạn
@@ -98,9 +99,11 @@ def choose_man_side():
                 if event.button == 1:  # Nút trái chuột
                     mx, my = pygame.mouse.get_pos()
                     if black_button.collidepoint((mx, my)):
+                        board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],"black")
                         human_turn = False
                         choosing_side = False
                     elif white_button.collidepoint((mx, my)):
+                        board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],"white")
                         human_turn = True
                         choosing_side = False
     
