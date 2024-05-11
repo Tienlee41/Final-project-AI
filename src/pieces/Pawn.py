@@ -1,5 +1,6 @@
 import pygame
 from pieces.Piece import Piece
+from pieces.Queen import Queen
 
 class Pawn(Piece):
     def __init__(self, pos, color, board):
@@ -70,6 +71,12 @@ class Pawn(Piece):
                     output.append(en_passant_right)
 
         return output
+
+    def promote(self, board):
+        if (self.color == 'white' and self.y == 0) or (self.color == 'black' and self.y == 7):
+            promoted_piece = Queen((self.x, self.y), self.color, board)
+            board.set_piece_on_square(promoted_piece, self.x, self.y)
+            board.remove_piece(self)
 
     def attacking_squares(self, board):
         moves = []
