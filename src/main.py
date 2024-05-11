@@ -10,11 +10,11 @@ screen = pygame.display.set_mode(WINDOW_SIZE)
 
 #side = str(input())
 
-human_side = "white"
+player_side = "white"
 machine_side = "black"
 human_turn = True
 
-board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],human_side)
+board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],player_side)
 
 font = pygame.font.Font(None, 36)
 
@@ -49,10 +49,6 @@ def draw_start_menu():
     exit_text_rect = exit_text.get_rect(center=exit_button.center)
     screen.blit(exit_text, exit_text_rect)
 
-if human_side == "black" :
-    machine_side = "white"
-    human_turn = False
-
 board_states = [board.get_board_state()]
 
 machine = Machine(machine_side)
@@ -61,15 +57,6 @@ def draw(display):
 	display.fill('white')
 	board.draw(display)
 	pygame.display.update()
-
-def check_win(board) :
-    if board.is_in_checkmate('black'): # If black is in checkmate
-        print('White wins!')
-        return False
-    elif board.is_in_checkmate('white'): # If white is in checkmate
-        print('Black wins!')
-        return False
-    return True
 
 def choose_man_side():
     global human_turn
