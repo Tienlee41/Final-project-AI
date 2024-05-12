@@ -41,3 +41,8 @@ class Knight(Piece):
 				])
 
 		return output
+		
+	def copy(self, new_board):
+		return type(self)(self.pos, self.color, new_board)
+	
+
