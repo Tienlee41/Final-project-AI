@@ -70,7 +70,7 @@ class Pawn(Piece):
                     output.append(en_passant_left)
                 elif en_passant_right == (self.x, self.y + 1):
                     output.append(en_passant_right)
-
+            self.promote_to_queen(board)
         return output
 
     def promote(self, board):
