@@ -7,8 +7,8 @@ from pieces.Knight import Knight
 from pieces.Queen import Queen
 from pieces.King import King
 from pieces.Pawn import Pawn
-#from model.machine import Machine
-#from model.machine import Machine
+from model.machine import Machine
+
 
 
 # Game state checker
@@ -17,7 +17,6 @@ class Board:
 		self.width = width
 		self.height = height
 		self.human_side = human_side
-#		self.board_config # 2d chess board
 
 		self.tile_width = width // 8
 		self.tile_height = height // 8
@@ -210,3 +209,35 @@ class Board:
 
 		for square in self.squares:
 			square.draw(display)
+
+	def handle_click_pvc(self,mx,my,player_side):
+		x = mx // self.tile_width
+		y = my // self.tile_height
+		clicked_square = self.get_square_from_pos((x, y))
+		if player_side == "white":
+			machine_side = "black"
+		else :
+			machine_side = "white"
+		machine = Machine(machine_side)
+
+		if self.selected_piece is None:
+			if clicked_square.occupying_piece is not None:
+				if clicked_square.occupying_piece.color == player_side:
+					self.selected_piece = clicked_square.occupying_piece
+		elif self.selected_piece.move(self, clicked_square):
+			self.turn = 'white' if self.turn == 'black' else 'black'
+			next_move = machine.get_next_move(self.get_board_state())
+			if next_move:
+				self.handle_click(next_move[0] * self.tile_width, next_move[1] * self.tile_height)
+		elif clicked_square.occupying_piece is not None:
+			if clicked_square.occupying_piece is not None:
+				if clicked_square.occupying_piece.color == player_side:
+					self.selected_piece = clicked_square.occupying_piece
+			else:
+				if self.selected_piece.move(self, clicked_square):
+					self.turn = 'white' if self.turn == 'black' else 'black'
+                    # Sau khi người chơi thực hiện nước đi, kiểm tra và thực hiện nước đi của máy tính
+					if not self.is_in_checkmate(self.turn):
+						next_move = machine.get_next_move(self.get_board_state())
+						if next_move is not None:
+							self.handle_click(next_move[0] * self.tile_width, next_move[1] * self.tile_height)

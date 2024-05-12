@@ -9,12 +9,13 @@ WINDOW_SIZE = (600, 600)
 screen = pygame.display.set_mode(WINDOW_SIZE)
 
 #side = str(input())
+board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],"white")
+
+board_states = [board.get_board_state()]
 
 player_side = "white"
 machine_side = "black"
 human_turn = True
-
-board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],player_side)
 
 font = pygame.font.Font(None, 36)
 title_font = pygame.font.Font(None, 86)
@@ -50,9 +51,6 @@ def draw_start_menu():
     exit_text_rect = exit_text.get_rect(center=exit_button.center)
     screen.blit(exit_text, exit_text_rect)
 
-board_states = [board.get_board_state()]
-
-machine = Machine(machine_side)
 
 def draw(display):
 	display.fill('white')
@@ -60,7 +58,10 @@ def draw(display):
 	pygame.display.update()
 
 def choose_man_side():
-    global human_turn, board
+    global board
+    global player_turn
+    global machine_side
+    global player_side
     choosing_side = True
     
     background_image = pygame.image.load("res/images/background.png")  # Thay đổi đường dẫn tới hình nền của bạn
@@ -99,13 +100,15 @@ def choose_man_side():
                 if event.button == 1:  # Nút trái chuột
                     mx, my = pygame.mouse.get_pos()
                     if black_button.collidepoint((mx, my)):
-                        board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],"black")
-                        human_turn = False
+                        player_side = "black"
+                        machine_side = "white"
+                        player_turn = False
                         choosing_side = False
                     elif white_button.collidepoint((mx, my)):
-                        board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],"white")
-                        human_turn = True
+                        player_turn = True
                         choosing_side = False
+        board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],player_side)
+
     
 
 def player_vs_player():
@@ -132,7 +135,8 @@ def player_vs_player():
             print()
     
 def player_vs_computer():
-    global human_turn  # Thêm dòng này để sử dụng biến human_turn từ phạm vi toàn cục
+    global player_turn 
+    global player_side
     running = True
     while running:
         mx, my = pygame.mouse.get_pos()
@@ -141,17 +145,19 @@ def player_vs_computer():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN: 
-                if human_turn and event.button == 1:
-                    board.handle_click(mx, my)
-                    human_turn = False
+                if player_turn and event.button == 1:
+                    board.handle_click_pvc(mx, my,player_side)
+                    player_turn = True
         if board.is_in_checkmate('black'): # If black is in checkmate
             print('White wins!')
+            running = False
         elif board.is_in_checkmate('white'): # If white is in checkmate
             print('Black wins!')
-        if not human_turn:
-            next_move = machine.get_next_move(board.get_board_state())
-            board.handle_click(next_move[0] * board.tile_width, next_move[1] * board.tile_height)
-            human_turn = True
+            running = False
+        # if not human_turn:
+        #     next_move = machine.get_next_move(board.get_board_state())
+        #     board.handle_click(next_move[0] * board.tile_width, next_move[1] * board.tile_height)
+        #     human_turn = True
         # Draw the board
         draw(screen)
 
@@ -160,6 +166,7 @@ def player_vs_computer():
             for row in board.get_board_state():
                 print(row)
             print()
+
 
 def main():
     pygame.init()
