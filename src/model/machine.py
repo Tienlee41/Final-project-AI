@@ -1,18 +1,35 @@
+import pygame
 import random
+from pieces.Rook import Rook
+from pieces.Bishop import Bishop
+from pieces.Knight import Knight
+from pieces.Queen import Queen
+from pieces.King import King
+from pieces.Pawn import Pawn
 
 class Machine:
-    def __init__(self,machine_side):
+    def __init__(self, machine_side):
         self.machine_side = machine_side
+
     def get_next_move(self, board_state):
-        #random moves
-        empty_squares = []
-        empty_squares = []
-        for y, row in enumerate(board_state):
-            for x, piece in enumerate(row):
-                if piece == '':
-                    empty_squares.append((x, y))
-        
-        if empty_squares:
-            return random.choice(empty_squares)
+        # return a move (random)
+        if self.machine_side == "white" :
+            ms = "w"
+        else : 
+            ms = "b"
+        valid_moves = []
+        for x in range(8):
+            for y in range(8):
+                if board_state[y][x] != '':
+                    if board_state[y][x][0] == ms:
+                        valid_moves.extend(self.get_valid_moves(board_state, (x, y)))
+        if valid_moves:
+            return random.choice(valid_moves)
         else:
-            return None 
+            return None
+
+    def get_valid_moves(self, board_state, pos):
+        moves = []
+        return moves
+
+
