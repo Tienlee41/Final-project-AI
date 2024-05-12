@@ -3,8 +3,9 @@ from pieces.Piece import Piece
 from pieces.Queen import Queen
 
 class Pawn(Piece):
-    def __init__(self, pos, color, board):
+    def __init__(self, pos, color, board, human_side):
         super().__init__(pos, color, board)
+        self.move_direction = 1 if human_side == "white" else -1 # xác định hướng di chuyển 
 
         img_path = 'res/images/' + color[0] + '_pawn.png'
         self.img = pygame.image.load(img_path)
@@ -12,20 +13,20 @@ class Pawn(Piece):
 
         self.notation = ' '
 
-    def get_possible_moves(self, board):
+    def get_possible_moves(self, board, move_direction):
         output = []
         moves = []
 
         # Di chuyển về phía trước
         if self.color == 'white':
-            moves.append((0, -1))
+            moves.append((0, -1*move_direction))
             if not self.has_moved:
-                moves.append((0, -2))
+                moves.append((0, -2*move_direction))
 
         elif self.color == 'black':
-            moves.append((0, 1))
+            moves.append((0, 1*move_direction))
             if not self.has_moved:
-                moves.append((0, 2))
+                moves.append((0, 2*move_direction))
 
         for move in moves:
             new_pos = (self.x, self.y + move[1])
