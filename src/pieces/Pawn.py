@@ -5,6 +5,7 @@ from pieces.Queen import Queen
 class Pawn(Piece):
     def __init__(self, pos, color, board):
         super().__init__(pos, color, board)
+        self.move_direction = 1 if board.get_human_side() == "white" else -1  # Hướng di chuyển của quân tốt
 
         img_path = 'res/images/' + color[0] + '_pawn.png'
         self.img = pygame.image.load(img_path)
@@ -18,14 +19,14 @@ class Pawn(Piece):
 
         # Di chuyển về phía trước
         if self.color == 'white':
-            moves.append((0, -1))
+            moves.append((0, -1*self.move_direction))
             if not self.has_moved:
-                moves.append((0, -2))
+                moves.append((0, -2*self.move_direction))
 
         elif self.color == 'black':
-            moves.append((0, 1))
+            moves.append((0, 1*self.move_direction))
             if not self.has_moved:
-                moves.append((0, 2))
+                moves.append((0, 2*self.move_direction))
 
         for move in moves:
             new_pos = (self.x, self.y + move[1])
