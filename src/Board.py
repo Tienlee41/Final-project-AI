@@ -70,8 +70,9 @@ class Board:
 
 	def get_square_from_pos(self, pos):
 		for square in self.squares:
-			if (square.x, square.y) == (pos[0], pos[1]):
+			if (square.x, square.y) == pos:
 				return square
+
 
 
 	def get_piece_from_pos(self, pos):
@@ -194,18 +195,48 @@ class Board:
 
 
 	def is_in_checkmate(self, color):
-		output = False
+		# Kiểm tra xem vua của bên đang bị tấn công hay không
+		if not self.is_in_check(color):
+			return False  # Không phải checkmate nếu vua không bị tấn công
 
-		for piece in [i.occupying_piece for i in self.squares]:
-			if piece != None:
-				if piece.notation == 'K' and piece.color == color:
-					king = piece
+		# Lặp qua tất cả các quân cờ của bên
+		for piece in [i.occupying_piece for i in self.squares if i.occupying_piece is not None and i.occupying_piece.color == color]:
+			# Kiểm tra từng nước đi hợp lệ của từng quân cờ
+			for move in piece.get_valid_moves(self):
+				# Tạo một bản sao của bảng để thử nghiệm nước đi
+				test_board = self.copy_board()
+				test_board.move_piece(piece.pos, move)
+				
+				# Nếu sau nước đi đó, vua không còn bị tấn công, không phải checkmate
+				if not test_board.is_in_check(color):
+					return False
 
-		if king.get_valid_moves(self) == []:
-			if self.is_in_check(color):
-				output = True
+		# Nếu không có bất kỳ nước đi nào cho bất kỳ quân cờ nào và vua vẫn bị tấn công, là checkmate
+		return True
 
-		return output
+	def move_piece(self, start_pos, end_pos):
+		start_square = self.get_square_from_pos(start_pos)
+		end_square = self.get_square_from_pos(end_pos)
+
+		# Kiểm tra xem ô đầu có quân cờ không và quân cờ có thể di chuyển đến ô cuối không
+		if start_square.occupying_piece is None or not start_square.occupying_piece.move(self, end_square):
+			return False  # Không thể di chuyển quân cờ
+
+		# Di chuyển quân cờ từ ô đầu đến ô cuối
+		end_square.occupying_piece = start_square.occupying_piece
+		start_square.occupying_piece = None
+		return True
+
+	def copy_board(self):
+		# Tạo một bản sao mới của bảng và sao chép trạng thái của mỗi ô và quân cờ
+		copied_board = Board(self.width, self.height, self.human_side)
+		for y in range(8):
+			for x in range(8):
+				original_square = self.get_square_from_pos((x, y))
+				copied_square = copied_board.get_square_from_pos((x, y))
+				if original_square.occupying_piece is not None:
+					copied_square.occupying_piece = original_square.occupying_piece.copy(copied_board)
+		return copied_board
 
 
 	def draw(self, display):

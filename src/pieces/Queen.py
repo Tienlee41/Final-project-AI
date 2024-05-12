@@ -81,4 +81,9 @@ class Queen(Piece):
 		output.append(moves_nw)
 
 		return output
+		
+	def copy(self, new_board):
+		return type(self)(self.pos, self.color, new_board)
+	
+
 
