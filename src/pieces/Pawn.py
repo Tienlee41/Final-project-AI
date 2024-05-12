@@ -8,7 +8,7 @@ class Pawn(Piece):
 
         img_path = 'res/images/' + color[0] + '_pawn.png'
         self.img = pygame.image.load(img_path)
-        self.img = pygame.transform.scale(self.img, (board.tile_width - 35, board.tile_height - 35))
+        self.img = pygame.transform.scale(self.img, (board.tile_width - 20, board.tile_height - 20))
 
         self.notation = ' '
 
@@ -55,19 +55,23 @@ class Pawn(Piece):
         # Kiểm tra bắt tốt qua đường
         if board.en_passant_target_square is not None:
             en_passant_square = board.en_passant_target_square
-            target_x, target_y = en_passant_square.pos
 
+            en_passant_left = (en_passant_square.x - 1, en_passant_square.y)
+            en_passant_right = (en_passant_square.x + 1, en_passant_square.y)
+            
             if self.color == 'white':
-                # Kiểm tra xem ô mục tiêu cho en passant có nằm ở bên trái hoặc bên phải của quân tốt không
-                if (target_x - 1, target_y) == (self.x, self.y - 1) or (target_x + 1, target_y) == (self.x, self.y - 1):
-                    output.append(en_passant_square)
+                if en_passant_left == (self.x, self.y - 1):
+                    output.append(en_passant_left)
+                elif en_passant_right == (self.x, self.y - 1):
+                    output.append(en_passant_right)
             elif self.color == 'black':
-                # Kiểm tra xem ô mục tiêu cho en passant có nằm ở bên trái hoặc bên phải của quân tốt không
-                if (target_x - 1, target_y) == (self.x, self.y + 1) or (target_x + 1, target_y) == (self.x, self.y + 1):
-                    output.append(en_passant_square)
+                if en_passant_left == (self.x, self.y + 1):
+                    output.append(en_passant_left)
+                elif en_passant_right == (self.x, self.y + 1):
+                    output.append(en_passant_right)
 
         return output
-    
+
     def promote(self, board):
         if (self.color == 'white' and self.y == 0) or (self.color == 'black' and self.y == 7):
             promoted_piece = Queen((self.x, self.y), self.color, board)
