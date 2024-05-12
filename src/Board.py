@@ -1,5 +1,6 @@
 import pygame
 
+
 from Square import Square
 from pieces.Rook import Rook
 from pieces.Bishop import Bishop
@@ -7,22 +8,25 @@ from pieces.Knight import Knight
 from pieces.Queen import Queen
 from pieces.King import King
 from pieces.Pawn import Pawn
-from model.machine import Machine
+#from model.machine import Machine
+#from model.machine import Machine
 
 
 
 # Game state checker
 class Board:
-	def __init__(self, width, height,human_side):
+	def __init__(self, width, height, human_side):
 		self.width = width
 		self.height = height
 		self.human_side = human_side
+#		self.board_config # 2d chess board
 
 		self.tile_width = width // 8
 		self.tile_height = height // 8
 		self.selected_piece = None
 		self.turn = 'white'
 		#self.board_txt
+		self.en_passant_target_square = None
 
 		# try making it chess.board.fen()
 		self.config_white_start = [
@@ -50,6 +54,11 @@ class Board:
 
 		self.setup_board()
 
+	def get_human_side(self):
+		return self.human_side	
+
+	def set_en_passant_target_square(self, square):
+		self.en_passant_target_square = square
 
 	def generate_squares(self):
 		output = []
@@ -119,7 +128,7 @@ class Board:
 		board_state = []
 		for y in range(8):
 			row = []
-			for x in range(8):
+			for x in range(8): 
 				square = self.get_square_from_pos((x, y))
 				if square.occupying_piece is not None:
 					row.append(square.occupying_piece.color[0] + square.occupying_piece.notation)
@@ -209,35 +218,3 @@ class Board:
 
 		for square in self.squares:
 			square.draw(display)
-
-	def handle_click_pvc(self,mx,my,player_side):
-		x = mx // self.tile_width
-		y = my // self.tile_height
-		clicked_square = self.get_square_from_pos((x, y))
-		if player_side == "white":
-			machine_side = "black"
-		else :
-			machine_side = "white"
-		machine = Machine(machine_side)
-
-		if self.selected_piece is None:
-			if clicked_square.occupying_piece is not None:
-				if clicked_square.occupying_piece.color == player_side:
-					self.selected_piece = clicked_square.occupying_piece
-		elif self.selected_piece.move(self, clicked_square):
-			self.turn = 'white' if self.turn == 'black' else 'black'
-			next_move = machine.get_next_move(self.get_board_state())
-			if next_move:
-				self.handle_click(next_move[0] * self.tile_width, next_move[1] * self.tile_height)
-		elif clicked_square.occupying_piece is not None:
-			if clicked_square.occupying_piece is not None:
-				if clicked_square.occupying_piece.color == player_side:
-					self.selected_piece = clicked_square.occupying_piece
-			else:
-				if self.selected_piece.move(self, clicked_square):
-					self.turn = 'white' if self.turn == 'black' else 'black'
-                    # Sau khi người chơi thực hiện nước đi, kiểm tra và thực hiện nước đi của máy tính
-					if not self.is_in_checkmate(self.turn):
-						next_move = machine.get_next_move(self.get_board_state())
-						if next_move is not None:
-							self.handle_click(next_move[0] * self.tile_width, next_move[1] * self.tile_height)
