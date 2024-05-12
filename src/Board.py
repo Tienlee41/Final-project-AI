@@ -17,11 +17,13 @@ class Board:
 		self.width = width
 		self.height = height
 		self.human_side = human_side
+ 		#self.board_config # 2d chess board
 
 		self.tile_width = width // 8
 		self.tile_height = height // 8
 		self.selected_piece = None
 		self.turn = 'white'
+		self.en_passant_target_square = None
 		#self.board_txt
 
 		# try making it chess.board.fen()
@@ -50,6 +52,11 @@ class Board:
 
 		self.setup_board()
 
+	def get_human_side(self):
+		return self.human_side	
+
+	def set_en_passant_target_square(self, square):
+		self.en_passant_target_square = square
 
 	def generate_squares(self):
 		output = []
