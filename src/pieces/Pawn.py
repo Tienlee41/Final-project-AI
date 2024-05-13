@@ -6,6 +6,7 @@ class Pawn(Piece):
     def __init__(self, pos, color, board):
         super().__init__(pos, color, board)
         self.move_direction = 1 if board.get_human_side() == "white" else -1  # Hướng di chuyển của quân tốt
+        self.en_passant_move = False  # Thuộc tính để đánh dấu nước đi en passant
 
         img_path = 'res/images/' + color[0] + '_pawn.png'
         self.img = pygame.image.load(img_path)
@@ -54,23 +55,35 @@ class Pawn(Piece):
             output.append(square)
 
         # Kiểm tra bắt tốt qua đường
-        if board.en_passant_target_square is not None:
-            en_passant_square = board.en_passant_target_square
+        en_passant_moves = self.en_passant_moves(board)
+        for square in en_passant_moves:
+            output.append(square)
+            # Đánh dấu là nước đi en passant
+            square.en_passant_move = True
 
-            en_passant_left = (en_passant_square.x - 1, en_passant_square.y)
-            en_passant_right = (en_passant_square.x + 1, en_passant_square.y)
-            
-            if self.color == 'white':
-                if en_passant_left == (self.x, self.y - 1):
-                    output.append(en_passant_left)
-                elif en_passant_right == (self.x, self.y - 1):
-                    output.append(en_passant_right)
-            elif self.color == 'black':
-                if en_passant_left == (self.x, self.y + 1):
-                    output.append(en_passant_left)
-                elif en_passant_right == (self.x, self.y + 1):
-                    output.append(en_passant_right)
-            self.promote_to_queen(board)
+        return output
+    
+    def en_passant_moves(self, board):
+        output = []
+
+        # Lấy vị trí mục tiêu cho en passant
+        target_square = board.en_passant_target_square
+
+        if target_square is not None:
+            target_x, target_y = target_square.x, target_square.y
+
+            # Kiểm tra xem en passant có thể thực hiện về bên trái không
+            if self.x - 1 == target_x and abs(self.y - target_y) == 1:
+                # Tạo ô đích cho en passant
+                destination_square = board.get_square_from_pos((self.x - 1, self.y))
+                output.append(destination_square)
+
+            # Kiểm tra xem en passant có thể thực hiện về bên phải không
+            elif self.x + 1 == target_x and abs(self.y - target_y) == 1:
+                # Tạo ô đích cho en passant
+                destination_square = board.get_square_from_pos((self.x + 1, self.y))
+                output.append(destination_square)
+
         return output
 
     def promote(self, board):
@@ -100,8 +113,3 @@ class Pawn(Piece):
                 output.append(square)
 
         return output
-    	
-    def copy(self, new_board):
-        return type(self)(self.pos, self.color, new_board)
-	
-
