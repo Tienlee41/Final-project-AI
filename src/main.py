@@ -1,4 +1,5 @@
 import pygame
+import sys
 
 from Board import Board
 from model.machine import Machine
@@ -109,6 +110,57 @@ def choose_man_side():
                         choosing_side = False
         board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],player_side)
 
+
+def draw_end_game_whitewin():
+    running = True
+    while running:
+        message = "White wins!"
+        text = title_font.render(message, True, (0, 0, 0))
+        text_rect = text.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2))
+        screen.blit(text, text_rect)
+        pygame.display.update()
+
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                running = False
+
+    reset_game()
+    main()
+
+def draw_end_game_blackwin():
+    running = True
+    while running:
+        message = "Black wins!"
+        text = title_font.render(message, True, (0, 0, 0))
+        text_rect = text.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2))
+        screen.blit(text, text_rect)
+        pygame.display.update()
+
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                running = False
+
+    reset_game()
+    main()
+
+def reset_game():
+    # Đặt lại các biến cần thiết
+    global board
+    global board_states
+    global player_side
+    global machine_side
+    global human_turn
+
+    # Các biến cần thiết sẽ được đặt lại về trạng thái ban đầu
+    board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1], "white")
+    board_states = [board.get_board_state()]
+    player_side = "white"
+    machine_side = "black"
+    human_turn = True
+
+    # Hiển thị menu khởi đầu lại
+    draw_start_menu()
+    pygame.display.update()
     
 
 def player_vs_player():
@@ -122,10 +174,8 @@ def player_vs_player():
                 if event.button == 1:
                     board.handle_click(mx, my)
         if board.is_in_checkmate('black'): # If black is in checkmate
-            print('White wins!')
             running = False
         elif board.is_in_checkmate('white'): # If white is in checkmate
-            print('Black wins!')
             running = False
         draw(screen)
         if board.get_board_state() != board_states[len(board_states)-1] :
@@ -149,10 +199,8 @@ def player_vs_computer():
                     board.handle_click_pvc(mx, my,player_side)
                     player_turn = True
         if board.is_in_checkmate('black'): # If black is in checkmate
-            print('White wins!')
             running = False
         elif board.is_in_checkmate('white'): # If white is in checkmate
-            print('Black wins!')
             running = False
         # if not human_turn:
         #     next_move = machine.get_next_move(board.get_board_state())
@@ -173,8 +221,8 @@ def main():
     screen = pygame.display.set_mode(WINDOW_SIZE)
     pygame.display.set_caption('Chess')
     
-    draw_start_menu()
-    pygame.display.update()
+ #   draw_start_menu()
+  #  pygame.display.update()
     
     running = True
     draw_start_menu()
@@ -190,16 +238,24 @@ def main():
                     if 250 <= my <= 300:
                         player_vs_player()
                         draw(screen)
+                        running = False
                     # Kiểm tra xem người dùng có nhấn vào nút "1 player" không
                     elif 350 <= my <= 400:
                         choose_man_side()
                         player_vs_computer()
                         draw(screen)
+                        running = False
                     # Kiểm tra xem người dùng có nhấn vào nút "Quit" không
                     elif 450 <= my <= 500:
-                        running = False  # Dừng vòng lặp và thoát game
+                        pygame.quit()  # Dừng vòng lặp và thoát game
 
+    if board.is_in_checkmate('black'): # If black is in checkmate
+        draw_end_game_whitewin()
+    elif board.is_in_checkmate('white'):
+        draw_end_game_blackwin()
     pygame.quit()
+    
 
 if __name__ == '__main__':
     main()
+    
