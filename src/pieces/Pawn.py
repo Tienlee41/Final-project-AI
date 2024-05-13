@@ -60,7 +60,13 @@ class Pawn(Piece):
             output.append(square)
 
         return output
-    
+
+    def promote(self, board):
+        if (self.color == 'white' and self.y == 0) or (self.color == 'black' and self.y == 7):
+            promoted_piece = Queen((self.x, self.y), self.color, board)
+            board.set_piece_on_square(promoted_piece, self.x, self.y)
+            board.remove_piece(self)
+
     def en_passant_moves(self, board):
         output = []
 
@@ -70,29 +76,25 @@ class Pawn(Piece):
         if target_square is not None:
             target_x, target_y = target_square.x, target_square.y
 
-            # Kiểm tra xem en passant có thể thực hiện về bên trái không
-            if self.x - 1 == target_x and abs(self.y - target_y) == 1:
-                # Tạo ô đích cho en passant
-                destination_square = board.get_square_from_pos((self.x - 1, self.y))
-                output.append(destination_square)
-                # Đánh dấu là nước đi en passant
-                destination_square.en_passant_move = True
+            # Kiểm tra xem quân tốt đối phương đã di chuyển 2 ô và nằm ở hàng ngang với quân tốt hiện tại
+            if abs(target_y - self.y) == 2 and target_y == 3.5 - 2.5 * self.move_direction:
+                # Kiểm tra xem en passant có thể thực hiện về bên trái không
+                if self.x - 1 == target_x:
+                    # Tạo ô đích cho en passant
+                    destination_square = board.get_square_from_pos((self.x - 1, target_y))
+                    output.append(destination_square)
+                    # Đánh dấu là nước đi en passant
+                    destination_square.en_passant_move = True
 
-            # Kiểm tra xem en passant có thể thực hiện về bên phải không
-            elif self.x + 1 == target_x and abs(self.y - target_y) == 1:
-                # Tạo ô đích cho en passant
-                destination_square = board.get_square_from_pos((self.x + 1, self.y))
-                output.append(destination_square)
-                # Đánh dấu là nước đi en passant
-                destination_square.en_passant_move = True
+                # Kiểm tra xem en passant có thể thực hiện về bên phải không
+                if self.x + 1 == target_x:
+                    # Tạo ô đích cho en passant
+                    destination_square = board.get_square_from_pos((self.x + 1, target_y))
+                    output.append(destination_square)
+                    # Đánh dấu là nước đi en passant
+                    destination_square.en_passant_move = True
 
         return output
-
-    def promote(self, board):
-        if (self.color == 'white' and self.y == 0) or (self.color == 'black' and self.y == 7):
-            promoted_piece = Queen((self.x, self.y), self.color, board)
-            board.set_piece_on_square(promoted_piece, self.x, self.y)
-            board.remove_piece(self)
 
     def attacking_squares(self, board):
         moves = []
@@ -104,6 +106,18 @@ class Pawn(Piece):
             moves.append((self.x - 1, self.y + 1))
             moves.append((self.x + 1, self.y + 1))
 
+        # Kiểm tra bắt tốt qua đường
+        target_square = board.en_passant_target_square
+        if target_square is not None:
+            # Nếu quân Tốt đối phương đã di chuyển 2 bước và nằm ở hàng ngang với quân Tốt hiện tại
+            if abs(target_square.y - self.y) == 2 and target_square.y == 3.5 - 2.5 * self.move_direction:
+                # Nếu quân Tốt hiện tại có thể bắt qua đường về bên trái
+                if self.x - 1 == target_square.x:
+                    moves.append((self.x - 1, self.y - self.move_direction))
+                # Nếu quân Tốt hiện tại có thể bắt qua đường về bên phải
+                elif self.x + 1 == target_square.x:
+                    moves.append((self.x + 1, self.y - self.move_direction))
+
         # Lọc ra các ô nằm ngoài bàn cờ
         moves = [(x, y) for x, y in moves if 0 <= x < 8 and 0 <= y < 8]
 
@@ -113,17 +127,5 @@ class Pawn(Piece):
             square = board.get_square_from_pos((x, y))
             if square.occupying_piece is not None and square.occupying_piece.color != self.color:
                 output.append(square)
-
-        # Kiểm tra bắt tốt qua đường
-        target_square = board.en_passant_target_square
-        if target_square is not None:
-            # Nếu quân Tốt đối phương đã di chuyển 2 bước và nằm ở hàng ngang với quân Tốt hiện tại
-            if abs(target_square.y - self.y) == 2 and target_square.y == self.y:
-                # Nếu quân Tốt hiện tại có thể bắt qua đường về bên trái
-                if self.x - 1 == target_square.x:
-                    output.append(board.get_square_from_pos((self.x - 1, self.y)))
-                # Nếu quân Tốt hiện tại có thể bắt qua đường về bên phải
-                elif self.x + 1 == target_square.x:
-                    output.append(board.get_square_from_pos((self.x + 1, self.y)))
 
         return output
