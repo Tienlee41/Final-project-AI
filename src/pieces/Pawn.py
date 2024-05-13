@@ -58,8 +58,6 @@ class Pawn(Piece):
         en_passant_moves = self.en_passant_moves(board)
         for square in en_passant_moves:
             output.append(square)
-            # Đánh dấu là nước đi en passant
-            square.en_passant_move = True
 
         return output
     
@@ -77,12 +75,16 @@ class Pawn(Piece):
                 # Tạo ô đích cho en passant
                 destination_square = board.get_square_from_pos((self.x - 1, self.y))
                 output.append(destination_square)
+                # Đánh dấu là nước đi en passant
+                destination_square.en_passant_move = True
 
             # Kiểm tra xem en passant có thể thực hiện về bên phải không
             elif self.x + 1 == target_x and abs(self.y - target_y) == 1:
                 # Tạo ô đích cho en passant
                 destination_square = board.get_square_from_pos((self.x + 1, self.y))
                 output.append(destination_square)
+                # Đánh dấu là nước đi en passant
+                destination_square.en_passant_move = True
 
         return output
 
@@ -111,5 +113,17 @@ class Pawn(Piece):
             square = board.get_square_from_pos((x, y))
             if square.occupying_piece is not None and square.occupying_piece.color != self.color:
                 output.append(square)
+
+        # Kiểm tra bắt tốt qua đường
+        target_square = board.en_passant_target_square
+        if target_square is not None:
+            # Nếu quân Tốt đối phương đã di chuyển 2 bước và nằm ở hàng ngang với quân Tốt hiện tại
+            if abs(target_square.y - self.y) == 2 and target_square.y == self.y:
+                # Nếu quân Tốt hiện tại có thể bắt qua đường về bên trái
+                if self.x - 1 == target_square.x:
+                    output.append(board.get_square_from_pos((self.x - 1, self.y)))
+                # Nếu quân Tốt hiện tại có thể bắt qua đường về bên phải
+                elif self.x + 1 == target_square.x:
+                    output.append(board.get_square_from_pos((self.x + 1, self.y)))
 
         return output
