@@ -193,7 +193,6 @@ class Board:
 			new_square.occupying_piece = new_square_old_piece
 		return output
 
-
 	def is_in_checkmate(self, color):
 		# Kiểm tra xem vua của bên đang bị tấn công hay không
 		if not self.is_in_check(color):
@@ -206,9 +205,20 @@ class Board:
 				# Tạo một bản sao của bảng để thử nghiệm nước đi
 				test_board = self.copy_board()
 				test_board.move_piece(piece.pos, move)
-				
-				# Nếu sau nước đi đó, vua không còn bị tấn công, không phải checkmate
+
+				# Kiểm tra xem vua đã không còn bị tấn công
 				if not test_board.is_in_check(color):
+					return False
+
+		# Kiểm tra xem có nước đi nào để bảo vệ vua không
+		opposite_color = 'white' if color == 'black' else 'black'
+		for piece in [i.occupying_piece for i in self.squares if i.occupying_piece is not None and i.occupying_piece.color == color]:
+			for move in piece.get_valid_moves(self):
+				test_board = self.copy_board()
+				test_board.move_piece(piece.pos, move)
+
+				# Kiểm tra xem sau nước đi này, có cách nào để bảo vệ vua không
+				if not any(test_board.is_in_checkmate(opposite_color) for piece in [i.occupying_piece for i in test_board.squares if i.occupying_piece is not None and i.occupying_piece.color == opposite_color] for move in piece.get_valid_moves(test_board)):
 					return False
 
 		# Nếu không có bất kỳ nước đi nào cho bất kỳ quân cờ nào và vua vẫn bị tấn công, là checkmate
