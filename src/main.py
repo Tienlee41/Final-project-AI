@@ -1,5 +1,4 @@
 import pygame
-import sys
 
 from Board import Board
 from model.machine import Machine
