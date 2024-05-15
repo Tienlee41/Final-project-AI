@@ -17,12 +17,6 @@ class Machine:
         self.pawn = 1
         self.king = 2000
 
-    # Return name of position according to chess board
-    def name_pos(self,x,y):
-        if self.machine_side == "white":
-            return str(chr(int('a')+x)+str(8-y))
-        else :
-            return str(chr(int('h')-x)+str(x+1))
 
     def get_next_move(self, board_state):
         # return a move (random)
