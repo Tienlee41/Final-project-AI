@@ -1,6 +1,11 @@
 import pygame
+import sys
+import os
 from pieces.Piece import Piece
 from pieces.Queen import Queen
+from pieces.Rook import Rook
+from pieces.Bishop import Bishop
+from pieces.Knight import Knight
 
 class Pawn(Piece):
     def __init__(self, pos, color, board):
@@ -90,10 +95,76 @@ class Pawn(Piece):
         return output
 
     def promote(self, board):
-        if (self.color == 'white' and self.y == 0) or (self.color == 'black' and self.y == 7):
-            promoted_piece = Queen((self.x, self.y), self.color, board)
-            board.set_piece_on_square(promoted_piece, self.x, self.y)
-            board.remove_piece(self)
+        chosen_piece = self.display_promotion_options(self.color)
+        if chosen_piece == "Queen":
+            return Queen((self.x, self.y), self.color, board)
+        elif chosen_piece == "Knight":
+            return Knight((self.x, self.y), self.color, board)
+        elif chosen_piece == "Bishop":
+            return Bishop((self.x, self.y), self.color, board)
+        elif chosen_piece == "Rook":
+            return Rook((self.x, self.y), self.color, board)
+
+    def display_promotion_options(self, pawn_color):
+        pygame.init()
+        screen = pygame.display.get_surface()
+        clock = pygame.time.Clock()
+        WINDOW_WIDTH = 400
+        WINDOW_HEIGHT = 200
+        BACKGROUND_COLOR = (150, 150, 150)
+        TEXT_COLOR = (0, 0, 0)
+        FONT_SIZE = 30
+        font = pygame.font.SysFont(None, FONT_SIZE)
+
+        title_text = font.render("Choose a piece to promote to:", True, TEXT_COLOR)
+        title_rect = title_text.get_rect(center=(WINDOW_WIDTH // 2, FONT_SIZE))
+
+        # Các lựa chọn
+        options = ["Queen", "Knight", "Bishop", "Rook"]
+        num_options = len(options)
+        OPTION_WIDTH = 100
+        OPTION_HEIGHT = 100
+
+        initial_x = (WINDOW_WIDTH - num_options * OPTION_WIDTH) // 2
+        initial_y = FONT_SIZE
+
+        images = {}
+        option_rects = []  # Tạo list để lưu các hình chữ nhật cho lựa chọn
+
+        for i, option in enumerate(options):
+            option_rect = pygame.Rect(initial_x + i * OPTION_WIDTH + 10, initial_y + 10, OPTION_WIDTH - 20, OPTION_HEIGHT - 20)  # Điều chỉnh vị trí và kích thước của hình chữ nhật
+            option_rects.append(option_rect)  # Thêm hình chữ nhật vào list
+
+            # Vẽ hình chữ nhật đại diện cho lựa chọn
+            pygame.draw.rect(screen, BACKGROUND_COLOR, option_rect, border_radius=5)
+
+            image_path = os.path.join("res/images", f"{pawn_color[0]}_{option.lower()}.png")
+            images[option] = pygame.image.load(image_path).convert_alpha()
+            image = pygame.transform.scale(images[option], (OPTION_WIDTH - 20, OPTION_HEIGHT - 20))  # Giảm kích thước để hiển thị đẹp hơn
+
+            # Vẽ hình ảnh quân cờ lên hình chữ nhật
+            screen.blit(image, (option_rect.x + 10, option_rect.y + 10))
+
+        # Vẽ nền và tiêu đề
+        screen.fill(BACKGROUND_COLOR)
+        screen.blit(title_text, title_rect)
+
+        pygame.display.flip()
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    # Kiểm tra xem người chơi nhấp chuột vào lựa chọn nào
+                    mouse_pos = pygame.mouse.get_pos()
+                    for i, rect in enumerate(option_rects):
+                        if rect.collidepoint(mouse_pos):
+                            return options[i]
+
+            clock.tick(30)
+
 
     def attacking_squares(self, board):
         moves = []
