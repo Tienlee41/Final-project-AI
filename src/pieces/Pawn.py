@@ -110,6 +110,7 @@ class Pawn(Piece):
         clock = pygame.time.Clock()
         SQUARE_SIZE = 50
         BACKGROUND_COLOR = (250, 250, 250)
+        LINE_COLOR = (0, 0, 0)
 
         promotion_surface = pygame.Surface((SQUARE_SIZE, SQUARE_SIZE * 4))
         promotion_surface.fill(BACKGROUND_COLOR)
@@ -131,6 +132,8 @@ class Pawn(Piece):
             pygame.draw.rect(promotion_surface, BACKGROUND_COLOR, option_rect, border_radius=5)
 
             promotion_surface.blit(image, (option_rect.x, option_rect.y))
+
+            pygame.draw.rect(promotion_surface, LINE_COLOR, option_rect, 1)
 
         screen.blit(promotion_surface, (self.x * SQUARE_SIZE, self.y * SQUARE_SIZE))
         pygame.display.flip()
