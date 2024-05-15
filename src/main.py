@@ -8,14 +8,12 @@ pygame.init()
 WINDOW_SIZE = (600, 600)
 screen = pygame.display.set_mode(WINDOW_SIZE)
 
-#side = str(input())
-board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],"white")
-
-board_states = [board.get_board_state()]
-
 player_side = "white"
 machine_side = "black"
-human_turn = True
+player_turn = True
+board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],player_side)
+board_states = [board.get_board_state()]
+
 
 font = pygame.font.Font(None, 36)
 title_font = pygame.font.Font(None, 86)
@@ -31,11 +29,11 @@ def draw_start_menu():
     screen.blit(title_text, title_rect)
 
     # Vẽ nút "2 player"
-    human_button = pygame.Rect((WINDOW_SIZE[0] // 2) - 125, 250, 250, 50)
-    pygame.draw.rect(screen, (200, 200, 200), human_button)
-    human_text = font.render('Player vs Player', True, (0, 0, 0))
-    human_text_rect = human_text.get_rect(center=human_button.center)
-    screen.blit(human_text, human_text_rect)
+    player_button = pygame.Rect((WINDOW_SIZE[0] // 2) - 125, 250, 250, 50)
+    pygame.draw.rect(screen, (200, 200, 200), player_button)
+    player_text = font.render('Player vs Player', True, (0, 0, 0))
+    player_text_rect = player_text.get_rect(center=player_button.center)
+    screen.blit(player_text, player_text_rect)
 
     # Vẽ nút "1 player"
     ai_button = pygame.Rect((WINDOW_SIZE[0] // 2) - 125, 350, 250, 50)
@@ -148,14 +146,14 @@ def reset_game():
     global board_states
     global player_side
     global machine_side
-    global human_turn
+    global player_turn
 
     # Các biến cần thiết sẽ được đặt lại về trạng thái ban đầu
     board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1], "white")
     board_states = [board.get_board_state()]
     player_side = "white"
     machine_side = "black"
-    human_turn = True
+    player_turn = True
 
     # Hiển thị menu khởi đầu lại
     draw_start_menu()
@@ -201,10 +199,10 @@ def player_vs_computer():
             running = False
         elif board.is_in_checkmate('white'): # If white is in checkmate
             running = False
-        # if not human_turn:
+        # if not player_turn:
         #     next_move = machine.get_next_move(board.get_board_state())
         #     board.handle_click(next_move[0] * board.tile_width, next_move[1] * board.tile_height)
-        #     human_turn = True
+        #     player_turn = True
         # Draw the board
         draw(screen)
 

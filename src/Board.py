@@ -13,20 +13,17 @@ from model.machine import Machine
 
 # Game state checker
 class Board:
-	def __init__(self, width, height,human_side):
+	def __init__(self, width, height,player_side):
 		self.width = width
 		self.height = height
-		self.human_side = human_side
- 		#self.board_config # 2d chess board
+		self.player_side = player_side
 
 		self.tile_width = width // 8
 		self.tile_height = height // 8
 		self.selected_piece = None
 		self.turn = 'white'
 		self.en_passant_target_square = None
-		#self.board_txt
 
-		# try making it chess.board.fen()
 		self.config_white_start = [
 			['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
 			['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
@@ -38,22 +35,22 @@ class Board:
 			['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR'],
 		]
 		self.config_black_start = [
-			['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR'],
+			['wR', 'wN', 'wB', 'wK', 'wQ', 'wB', 'wN', 'wR'],
 			['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
 			['','','','','','','',''],
 			['','','','','','','',''],
 			['','','','','','','',''],
 			['','','','','','','',''],
 			['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
-			['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
+			['bR', 'bN', 'bB', 'bK', 'bQ', 'bB', 'bN', 'bR'],
 		]
 
 		self.squares = self.generate_squares()
 
 		self.setup_board()
 
-	def get_human_side(self):
-		return self.human_side	
+	def get_player_side(self):
+		return self.player_side	
 
 	def set_en_passant_target_square(self, square):
 		self.en_passant_target_square = square
@@ -81,7 +78,7 @@ class Board:
 
 	def setup_board(self):
 		# iterating 2d list
-		if self.human_side == "white":
+		if self.player_side == "white":
 			config = self.config_white_start
 		else :
 			config = self.config_black_start
@@ -239,7 +236,7 @@ class Board:
 
 	def copy_board(self):
 		# Tạo một bản sao mới của bảng và sao chép trạng thái của mỗi ô và quân cờ
-		copied_board = Board(self.width, self.height, self.human_side)
+		copied_board = Board(self.width, self.height, self.player_side)
 		for y in range(8):
 			for x in range(8):
 				original_square = self.get_square_from_pos((x, y))
@@ -289,3 +286,9 @@ class Board:
 						next_move = machine.get_next_move(self.get_board_state())
 						if next_move is not None:
 							self.handle_click(next_move[0] * self.tile_width, next_move[1] * self.tile_height)
+
+	def get_name_pos(self,x,y):
+		if self.player_side == "white":
+			return str(chr(ord('a')+x)+str(8-y))
+		else :
+			return str(chr(ord('h')-x)+str(y+1))

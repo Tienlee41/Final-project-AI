@@ -5,7 +5,7 @@ from pieces.Queen import Queen
 class Pawn(Piece):
     def __init__(self, pos, color, board):
         super().__init__(pos, color, board)
-        self.move_direction = 1 if board.get_human_side() == "white" else -1  # Hướng di chuyển của quân tốt
+        self.move_direction = 1 if board.get_player_side() == "white" else -1  # Hướng di chuyển của quân tốt
         self.en_passant_move = False  # Thuộc tính để đánh dấu nước đi en passant
 
         img_path = 'res/images/' + color[0] + '_pawn.png'
