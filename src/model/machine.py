@@ -38,3 +38,63 @@ class Machine:
     def get_valid_moves(self, board_state, pos):
         moves = []
         return moves
+    def get_point_pieces(self,pieces):
+        if self.machine_side == "white":
+            if pieces[0] == 'w':
+                if pieces[1] == 'P':
+                    return self.pawn
+                elif pieces[1] == 'B':
+                    return self.bishop
+                elif pieces[1] == 'N':
+                    return self.knight
+                elif pieces[1] == 'R':
+                    return self.rook
+                elif pieces[1] == 'Q':
+                    return self.queen
+                elif pieces[1] == 'K':
+                    return self.king
+            elif pieces[0] == 'b':
+                if pieces[1] == 'P':
+                    return -self.pawn
+                elif pieces[1] == 'B':
+                    return -self.bishop
+                elif pieces[1] == 'N':
+                    return -self.knight
+                elif pieces[1] == 'R':
+                    return -self.rook
+                elif pieces[1] == 'Q':
+                    return -self.queen
+                elif pieces[1] == 'K':
+                    return -self.king
+            else :
+                return 0
+        if self.machine_side == "black":
+            if pieces[0] == 'b':
+                if pieces[1] == 'P':
+                    return self.pawn
+                elif pieces[1] == 'B':
+                    return self.bishop
+                elif pieces[1] == 'N':
+                    return self.knight
+                elif pieces[1] == 'R':
+                    return self.rook
+                elif pieces[1] == 'Q':
+                    return self.queen
+                elif pieces[1] == 'K':
+                    return self.king
+            elif pieces[0] == 'w':
+                if pieces[1] == 'P':
+                    return -self.pawn
+                elif pieces[1] == 'B':
+                    return -self.bishop
+                elif pieces[1] == 'N':
+                    return -self.knight
+                elif pieces[1] == 'R':
+                    return -self.rook
+                elif pieces[1] == 'Q':
+                    return -self.queen
+                elif pieces[1] == 'K':
+                    return -self.king
+            else :
+                return 0
+
