@@ -10,11 +10,11 @@ from pieces.Pawn import Pawn
 class Machine:
     def __init__(self, machine_side):
         self.machine_side = machine_side
-        self.rook = 5
-        self.bishop = 3
-        self.knight = 3
-        self.queen = 9
-        self.pawn = 1
+        self.rook = 50
+        self.bishop = 30
+        self.knight = 30
+        self.queen = 90
+        self.pawn = 10
         self.king = 2000
 
 
