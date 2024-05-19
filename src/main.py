@@ -159,6 +159,10 @@ def reset_game():
     draw_start_menu()
     pygame.display.update()
     
+def check_win(board,running):
+    if board.is_in_checkmate('black') | board.is_in_checkmate('white') :
+        return False
+    return True
 
 def player_vs_player():
     running = True
@@ -170,9 +174,7 @@ def player_vs_player():
             elif event.type == pygame.MOUSEBUTTONDOWN: 
                 if event.button == 1:
                     board.handle_click(mx, my)
-        if board.is_in_checkmate('black'): # If black is in checkmate
-            running = False
-        elif board.is_in_checkmate('white'): # If white is in checkmate
+        if check_win(board):
             running = False
         draw(screen)
         if board.get_board_state() != board_states[len(board_states)-1] :
@@ -180,28 +182,28 @@ def player_vs_player():
             for row in board.get_board_state():
                 print(row)
             print()
-    
+
 def player_vs_computer():
     global player_turn 
     global player_side
+    global machine_side
     running = True
     machine = Machine(machine_side)
+    print(machine_side)
     while running:
-        mx, my = pygame.mouse.get_pos()
+        mx, my = pygame.mouse.get_pos()  # Get mouse position for potential player move
+
         for event in pygame.event.get():
-            # Quit the game if the user presses the close button
             if event.type == pygame.QUIT:
                 running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN: 
-                if event.button == 1:
-                    if board.handle_click_pvc(mx, my,player_side):
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if not check_win(board):
+                    if player_turn & board.handle_click_pvc(mx, my, player_side):
                         player_turn = not player_turn
-        if not player_turn:
-            board.update_board(machine.make_move(board.get_board_state()))
-        if board.is_in_checkmate('black'): # If black is in checkmate
-            running = False
-        elif board.is_in_checkmate('white'): # If white is in checkmate
-            running = False
+            if not player_turn and not check_win(board) :
+                machine_move = machine.make_move(board.get_board_state())  # Get computer's move
+                board.update_board(machine_move)
+                player_turn = not player_turn
         draw(screen)
 
         if board.get_board_state() != board_states[len(board_states)-1]:
@@ -215,9 +217,6 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode(WINDOW_SIZE)
     pygame.display.set_caption('Chess')
-    
- #   draw_start_menu()
-  #  pygame.display.update()
     
     running = True
     draw_start_menu()

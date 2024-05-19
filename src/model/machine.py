@@ -10,6 +10,7 @@ from pieces.Pawn import Pawn
 class Machine:
     def __init__(self, machine_side):
         self.machine_side = machine_side
+        self.a = 0
         piece_score = {"K": 0, "Q": 9, "R": 5, "B": 3, "N": 3, "p": 1}
 
         self.knight_scores = [[0.0, 0.1, 0.2, 0.2, 0.2, 0.2, 0.1, 0.0],
@@ -70,10 +71,21 @@ class Machine:
         self.checkmate = 1000
         self.stalemate = 0
         self.depth = 5
+    
+    
 
     def make_move(self, board_state):
-            new_board_state = board_state
+        new_board_state = board_state
             # test 1 nuoc di
+        if self.machine_side == "black":
+            if self.a == 0:
+                new_board_state[1][7] = ''
+                new_board_state[2][7] = 'b '
+                self.a +=1 
+            else :
+                new_board_state[1][4] = ''
+                new_board_state[3][4] = 'b '
+        else :
             new_board_state[1][7] = ''
-            new_board_state[2][7] = 'b '
-            return new_board_state
+            new_board_state[2][7] = 'w '
+        return new_board_state

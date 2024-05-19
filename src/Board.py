@@ -147,20 +147,25 @@ class Board:
 			if clicked_square.occupying_piece.color == self.turn:
 				self.selected_piece = clicked_square.occupying_piece
 
-	def handle_click_pvc(self, mx, my,player_side):
+	def handle_click_pvc(self, mx, my, player_side):
 		x = mx // self.tile_width
 		y = my // self.tile_height
 		clicked_square = self.get_square_from_pos((x, y))
+
 		if self.selected_piece is None:
-			if clicked_square.occupying_piece is not None:
-				if clicked_square.occupying_piece.color == player_side:
-					self.selected_piece = clicked_square.occupying_piece
-		elif self.selected_piece.move(self, clicked_square):
-			return True
-		elif clicked_square.occupying_piece is not None:
-			if clicked_square.occupying_piece.color == player_side:
+			if clicked_square.occupying_piece is not None and clicked_square.occupying_piece.color == player_side:
 				self.selected_piece = clicked_square.occupying_piece
-		return False
+
+		elif self.selected_piece.move(self, clicked_square):
+			if type(clicked_square.occupying_piece) == Pawn:
+				print(clicked_square.occupying_piece.has_moved)
+				clicked_square.occupying_piece.has_moved = True
+			self.selected_piece = None
+			return True
+		elif clicked_square.occupying_piece is not None and clicked_square.occupying_piece == self.selected_piece:
+    
+			self.selected_piece = None  
+		return False 
 
 	def is_in_check(self, color, board_change=None): # board_change = [(x1, y1), (x2, y2)]
 		output = False
@@ -311,9 +316,17 @@ class Board:
 						square.occupying_piece = Pawn(
 							(x, y), 'white', self
 						)
+						if self.player_side == "white":
+							if y != 6 : square.occupying_piece.has_moved = True
+						else :
+							if y != 1 : square.occupying_piece.has_moved = True
 					elif piece[0] == 'b':
 						square.occupying_piece = Pawn(
 							(x, y), 'black', self
 						)
+						if self.player_side == "white":
+							if y != 1 : square.occupying_piece.has_moved = True
+						else :
+							if y != 6 : square.occupying_piece.has_moved = True
 				else:
 					square.occupying_piece = None
