@@ -11,7 +11,6 @@ class Machine:
     def __init__(self, machine_side):
         self.machine_side = machine_side
         piece_score = {"K": 0, "Q": 9, "R": 5, "B": 3, "N": 3, "p": 1}
-    #Đánh giá mức độ quan trọng của từng quân cờ (VD: 0 là không thể để mất,Q là quan trọng nhất và chỉ mang tính tương đối)
 
         self.knight_scores = [[0.0, 0.1, 0.2, 0.2, 0.2, 0.2, 0.1, 0.0],
                         [0.1, 0.3, 0.5, 0.5, 0.5, 0.5, 0.3, 0.1],
