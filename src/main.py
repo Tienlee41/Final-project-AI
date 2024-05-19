@@ -185,6 +185,7 @@ def player_vs_computer():
     global player_turn 
     global player_side
     running = True
+    machine = Machine(machine_side)
     while running:
         mx, my = pygame.mouse.get_pos()
         for event in pygame.event.get():
@@ -192,18 +193,15 @@ def player_vs_computer():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN: 
-                if player_turn and event.button == 1:
-                    board.handle_click_pvc(mx, my,player_side)
-                    player_turn = True
+                if event.button == 1:
+                    if board.handle_click_pvc(mx, my,player_side):
+                        player_turn = not player_turn
+        if not player_turn:
+            board.update_board(machine.make_move(board.get_board_state()))
         if board.is_in_checkmate('black'): # If black is in checkmate
             running = False
         elif board.is_in_checkmate('white'): # If white is in checkmate
             running = False
-        # if not player_turn:
-        #     next_move = machine.get_next_move(board.get_board_state())
-        #     board.handle_click(next_move[0] * board.tile_width, next_move[1] * board.tile_height)
-        #     player_turn = True
-        # Draw the board
         draw(screen)
 
         if board.get_board_state() != board_states[len(board_states)-1]:

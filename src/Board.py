@@ -127,7 +127,7 @@ class Board:
 			for x in range(8):
 				square = self.get_square_from_pos((x, y))
 				if square.occupying_piece is not None:
-					row.append(square.occupying_piece.color[0] + square.occupying_piece.notation)
+					row.append(square.occupying_piece.color[0] + square.occupying_piece.notation[0])
 				else:
 					row.append('')
 			board_state.append(row)
@@ -146,6 +146,21 @@ class Board:
 		elif clicked_square.occupying_piece is not None:
 			if clicked_square.occupying_piece.color == self.turn:
 				self.selected_piece = clicked_square.occupying_piece
+
+	def handle_click_pvc(self, mx, my,player_side):
+		x = mx // self.tile_width
+		y = my // self.tile_height
+		clicked_square = self.get_square_from_pos((x, y))
+		if self.selected_piece is None:
+			if clicked_square.occupying_piece is not None:
+				if clicked_square.occupying_piece.color == player_side:
+					self.selected_piece = clicked_square.occupying_piece
+		elif self.selected_piece.move(self, clicked_square):
+			return True
+		elif clicked_square.occupying_piece is not None:
+			if clicked_square.occupying_piece.color == player_side:
+				self.selected_piece = clicked_square.occupying_piece
+		return False
 
 	def is_in_check(self, color, board_change=None): # board_change = [(x1, y1), (x2, y2)]
 		output = False
@@ -255,40 +270,50 @@ class Board:
 		for square in self.squares:
 			square.draw(display)
 
-	def handle_click_pvc(self,mx,my,player_side):
-		x = mx // self.tile_width
-		y = my // self.tile_height
-		clicked_square = self.get_square_from_pos((x, y))
-		if player_side == "white":
-			machine_side = "black"
-		else :
-			machine_side = "white"
-		machine = Machine(machine_side)
-
-		if self.selected_piece is None:
-			if clicked_square.occupying_piece is not None:
-				if clicked_square.occupying_piece.color == player_side:
-					self.selected_piece = clicked_square.occupying_piece
-		elif self.selected_piece.move(self, clicked_square):
-			self.turn = 'white' if self.turn == 'black' else 'black'
-			next_move = machine.get_next_move(self.get_board_state())
-			if next_move:
-				self.handle_click(next_move[0] * self.tile_width, next_move[1] * self.tile_height)
-		elif clicked_square.occupying_piece is not None:
-			if clicked_square.occupying_piece is not None:
-				if clicked_square.occupying_piece.color == player_side:
-					self.selected_piece = clicked_square.occupying_piece
-			else:
-				if self.selected_piece.move(self, clicked_square):
-					self.turn = 'white' if self.turn == 'black' else 'black'
-                    # Sau khi người chơi thực hiện nước đi, kiểm tra và thực hiện nước đi của máy tính
-					if not self.is_in_checkmate(self.turn):
-						next_move = machine.get_next_move(self.get_board_state())
-						if next_move is not None:
-							self.handle_click(next_move[0] * self.tile_width, next_move[1] * self.tile_height)
-
 	def get_name_pos(self,x,y):
 		if self.player_side == "white":
 			return str(chr(ord('a')+x)+str(8-y))
 		else :
 			return str(chr(ord('h')-x)+str(y+1))
+
+	def update_board(self, board_state):
+		for y in range(8):
+			for x in range(8):
+				piece = board_state[y][x]
+				square = self.get_square_from_pos((x, y))
+
+				if piece != '':
+					# Xóa quân cờ hiện tại trên ô cờ
+					square.occupying_piece = None
+
+					# Đặt quân cờ mới lên ô cờ
+					if piece[1] == 'R':
+						square.occupying_piece = Rook(
+							(x, y), 'white' if piece[0] == 'w' else 'black', self
+						)
+					elif piece[1] == 'N':
+						square.occupying_piece = Knight(
+							(x, y), 'white' if piece[0] == 'w' else 'black', self
+						)
+					elif piece[1] == 'B':
+						square.occupying_piece = Bishop(
+							(x, y), 'white' if piece[0] == 'w' else 'black', self
+						)
+					elif piece[1] == 'Q':
+						square.occupying_piece = Queen(
+							(x, y), 'white' if piece[0] == 'w' else 'black', self
+						)
+					elif piece[1] == 'K':
+						square.occupying_piece = King(
+							(x, y), 'white' if piece[0] == 'w' else 'black', self
+						)
+					elif piece[0] == 'w':
+						square.occupying_piece = Pawn(
+							(x, y), 'white', self
+						)
+					elif piece[0] == 'b':
+						square.occupying_piece = Pawn(
+							(x, y), 'black', self
+						)
+				else:
+					square.occupying_piece = None
