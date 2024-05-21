@@ -41,20 +41,21 @@ def draw_start_menu():
     title_rect = title_text.get_rect(center=(WINDOW_SIZE[0] // 2, 125))
     screen.blit(title_text, title_rect)
 
+    # Vẽ nút "computer vs computer"
     computer_vs_computer_button = p.Rect((WINDOW_SIZE[0] // 2) - 150, 450, 300, 50)
     p.draw.rect(screen, (200, 200, 200), computer_vs_computer_button)
-    computer_vs_computer_text = fontt.render('Computer vs. Computer', True, (0, 0, 0))
+    computer_vs_computer_text = fontt.render('Computer vs Computer', True, (0, 0, 0))
     computer_vs_computer_text_rect = computer_vs_computer_text.get_rect(center=computer_vs_computer_button.center)
     screen.blit(computer_vs_computer_text, computer_vs_computer_text_rect)
 
-    # Vẽ nút "2 player"
+    # Vẽ nút "player vs player"
     player_button = p.Rect((WINDOW_SIZE[0] // 2) - 150, 250, 300, 50)
     p.draw.rect(screen, (200, 200, 200), player_button)
     player_text = fontt.render('Player vs Player', True, (0, 0, 0))
     player_text_rect = player_text.get_rect(center=player_button.center)
     screen.blit(player_text, player_text_rect)
 
-    # Vẽ nút "1 player"
+    # Vẽ nút "player vs computer"
     ai_button = p.Rect((WINDOW_SIZE[0] // 2) - 150, 350, 300, 50)
     p.draw.rect(screen, (200, 200, 200), ai_button)
     ai_text = fontt.render('Player vs Computer', True, (0, 0, 0))
@@ -84,19 +85,19 @@ def play_game():
             elif event.type == p.MOUSEBUTTONDOWN:
                 if event.button == 1:  # Nút trái chuột
                     mx, my = p.mouse.get_pos()
-                    # Kiểm tra xem người dùng có nhấn vào nút "2 player" không
+                    # Kiểm tra xem người dùng có nhấn vào nút "player vs player" không
                     if 250 <= my <= 300:
-                        player_one = True  # if a human is playing white, then this will be True, else False
+                        player_one = True  
                         player_two = True
                         main()
-                    # Kiểm tra xem người dùng có nhấn vào nút "1 player" không
+                    # Kiểm tra xem người dùng có nhấn vào nút "player vs computer" không
                     elif 350 <= my <= 400:
-                        player_one = True  # if a human is playing white, then this will be True, else False
+                        player_one = True 
                         player_two = False
                         main()
-
+                    # Kiểm tra xem người dùng có nhấn vào nút "computer vs computer" không
                     elif 450 <= my <= 500:
-                        player_one = False  # if a human is playing white, then this will be True, else False
+                        player_one = False 
                         player_two = False
                         main()
                     # Kiểm tra xem người dùng có nhấn vào nút "Quit" không
