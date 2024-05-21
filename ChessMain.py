@@ -105,6 +105,35 @@ def play_game():
 
     p.quit()
 
+def draw_end_game_whitewin():
+    running = True
+    while running:
+        message = "White wins!"
+        text = title_font.render(message, True, (0, 0, 0))
+        text_rect = text.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2))
+        screen.blit(text, text_rect)
+        p.display.update()
+
+        for event in p.event.get():
+            if event.type == p.MOUSEBUTTONDOWN:
+                running = False
+    play_game()
+
+def draw_end_game_blackwin():
+    running = True
+    while running:
+        message = "Black wins!"
+        text = title_font.render(message, True, (0, 0, 0))
+        text_rect = text.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2))
+        screen.blit(text, text_rect)
+        p.display.update()
+
+        for event in p.event.get():
+            if event.type == p.MOUSEBUTTONDOWN:
+                running = False
+
+    play_game()
+
 
 def main():
     """
@@ -216,9 +245,9 @@ def main():
         if game_state.checkmate:
             game_over = True
             if game_state.white_to_move:
-                drawEndGameText(screen, "Black wins by checkmate")
+                draw_end_game_whitewin()
             else:
-                drawEndGameText(screen, "White wins by checkmate")
+                draw_end_game_whitewin()
 
         elif game_state.stalemate:
             game_over = True
