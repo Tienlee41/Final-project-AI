@@ -78,16 +78,12 @@ class Board:
 
 	def setup_board(self):
 		# iterating 2d list
-		if self.player_side == "white":
-			config = self.config_white_start
-		else :
-			config = self.config_black_start
-		#self.board_config = config
+		
+		config = self.config_white_start if self.player_side == "white" else self.config_black_start
 		for y, row in enumerate(config):
 			for x, piece in enumerate(row):
 				if piece != '':
 					square = self.get_square_from_pos((x, y))
-
 					# looking inside contents, what piece does it have
 					if piece[1] == 'R':
 						square.occupying_piece = Rook(
@@ -127,7 +123,9 @@ class Board:
 			for x in range(8):
 				square = self.get_square_from_pos((x, y))
 				if square.occupying_piece is not None:
-					row.append(square.occupying_piece.color[0] + square.occupying_piece.notation[0])
+					piece = square.occupying_piece.color[0]
+					piece += square.occupying_piece.notation[0] if square.occupying_piece.notation != ' ' else 'P'
+					row.append(piece)
 				else:
 					row.append('')
 			board_state.append(row)
@@ -286,9 +284,8 @@ class Board:
 			for x in range(8):
 				piece = board_state[y][x]
 				square = self.get_square_from_pos((x, y))
-
 				if piece != '':
-					# Xóa quân cờ hiện tại trên ô cờ
+					print(self.get_name_pos(x,y) + piece)
 					square.occupying_piece = None
 
 					# Đặt quân cờ mới lên ô cờ
@@ -296,6 +293,7 @@ class Board:
 						square.occupying_piece = Rook(
 							(x, y), 'white' if piece[0] == 'w' else 'black', self
 						)
+						print(str(square.coord) + piece)
 					elif piece[1] == 'N':
 						square.occupying_piece = Knight(
 							(x, y), 'white' if piece[0] == 'w' else 'black', self
@@ -312,7 +310,7 @@ class Board:
 						square.occupying_piece = King(
 							(x, y), 'white' if piece[0] == 'w' else 'black', self
 						)
-					elif piece[0] == 'w':
+					elif piece == 'wP':
 						square.occupying_piece = Pawn(
 							(x, y), 'white', self
 						)
@@ -320,7 +318,7 @@ class Board:
 							if y != 6 : square.occupying_piece.has_moved = True
 						else :
 							if y != 1 : square.occupying_piece.has_moved = True
-					elif piece[0] == 'b':
+					elif piece == 'bP':
 						square.occupying_piece = Pawn(
 							(x, y), 'black', self
 						)

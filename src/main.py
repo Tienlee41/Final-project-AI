@@ -159,10 +159,10 @@ def reset_game():
     draw_start_menu()
     pygame.display.update()
     
-def check_win(board,running):
+def check_win(board):
     if board.is_in_checkmate('black') | board.is_in_checkmate('white') :
-        return False
-    return True
+        return True
+    return False
 
 def player_vs_player():
     running = True
@@ -197,11 +197,10 @@ def player_vs_computer():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if not check_win(board):
-                    if player_turn & board.handle_click_pvc(mx, my, player_side):
-                        player_turn = not player_turn
-            if not player_turn and not check_win(board) :
-                machine_move = machine.make_move(board.get_board_state())  # Get computer's move
+                if player_turn & board.handle_click_pvc(mx, my, player_side):
+                    player_turn = not player_turn
+            if not player_turn :
+                machine_move = machine.make_move(board)  # Get computer's move
                 board.update_board(machine_move)
                 player_turn = not player_turn
         draw(screen)
