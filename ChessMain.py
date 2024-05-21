@@ -8,7 +8,7 @@ import ChessEngine, ChessAI
 import sys
 from multiprocessing import Process, Queue
 
-BOARD_WIDTH = BOARD_HEIGHT = 600
+BOARD_WIDTH = BOARD_HEIGHT = 700
 WINDOW_SIZE = (BOARD_WIDTH, BOARD_HEIGHT)
 MOVE_LOG_PANEL_WIDTH = 250
 MOVE_LOG_PANEL_HEIGHT = BOARD_HEIGHT
@@ -41,22 +41,28 @@ def draw_start_menu():
     title_rect = title_text.get_rect(center=(WINDOW_SIZE[0] // 2, 125))
     screen.blit(title_text, title_rect)
 
+    computer_vs_computer_button = p.Rect((WINDOW_SIZE[0] // 2) - 150, 450, 300, 50)
+    p.draw.rect(screen, (200, 200, 200), computer_vs_computer_button)
+    computer_vs_computer_text = fontt.render('Computer vs. Computer', True, (0, 0, 0))
+    computer_vs_computer_text_rect = computer_vs_computer_text.get_rect(center=computer_vs_computer_button.center)
+    screen.blit(computer_vs_computer_text, computer_vs_computer_text_rect)
+
     # Vẽ nút "2 player"
-    player_button = p.Rect((WINDOW_SIZE[0] // 2) - 125, 250, 250, 50)
+    player_button = p.Rect((WINDOW_SIZE[0] // 2) - 150, 250, 300, 50)
     p.draw.rect(screen, (200, 200, 200), player_button)
     player_text = fontt.render('Player vs Player', True, (0, 0, 0))
     player_text_rect = player_text.get_rect(center=player_button.center)
     screen.blit(player_text, player_text_rect)
 
     # Vẽ nút "1 player"
-    ai_button = p.Rect((WINDOW_SIZE[0] // 2) - 125, 350, 250, 50)
+    ai_button = p.Rect((WINDOW_SIZE[0] // 2) - 150, 350, 300, 50)
     p.draw.rect(screen, (200, 200, 200), ai_button)
     ai_text = fontt.render('Player vs Computer', True, (0, 0, 0))
     ai_text_rect = ai_text.get_rect(center=ai_button.center)
     screen.blit(ai_text, ai_text_rect)
 
     # Vẽ nút "Quit"
-    exit_button = p.Rect((WINDOW_SIZE[0] // 2) - 125, 450, 250, 50)
+    exit_button = p.Rect((WINDOW_SIZE[0] // 2) - 150, 550, 300, 50)
     p.draw.rect(screen, (200, 200, 200), exit_button)
     exit_text = fontt.render('Quit', True, (0, 0, 0))
     exit_text_rect = exit_text.get_rect(center=exit_button.center)
@@ -88,8 +94,13 @@ def play_game():
                         player_one = True  # if a human is playing white, then this will be True, else False
                         player_two = False
                         main()
-                    # Kiểm tra xem người dùng có nhấn vào nút "Quit" không
+
                     elif 450 <= my <= 500:
+                        player_one = False  # if a human is playing white, then this will be True, else False
+                        player_two = False
+                        main()
+                    # Kiểm tra xem người dùng có nhấn vào nút "Quit" không
+                    elif 550 <= my <= 600:
                         p.quit()  # Dừng vòng lặp và thoát game
 
     p.quit()
@@ -101,7 +112,7 @@ def main():
     This will handle user input and updating the graphics.
     """
     p.init()
-    screen = p.display.set_mode((BOARD_WIDTH + MOVE_LOG_PANEL_WIDTH, BOARD_HEIGHT))
+    screen = p.display.set_mode((BOARD_WIDTH, BOARD_HEIGHT))
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
     game_state = ChessEngine.GameState()
