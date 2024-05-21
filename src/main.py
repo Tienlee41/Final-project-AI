@@ -190,6 +190,8 @@ def player_vs_computer():
     running = True
     machine = Machine(machine_side)
     print(machine_side)
+    moves= ['e7e5','f7f5','g7g5']
+    a=0
     while running:
         mx, my = pygame.mouse.get_pos()  # Get mouse position for potential player move
 
@@ -200,8 +202,8 @@ def player_vs_computer():
                 if player_turn & board.handle_click_pvc(mx, my, player_side):
                     player_turn = not player_turn
             if not player_turn :
-                machine_move = machine.make_move(board)  # Get computer's move
-                board.update_board(machine_move)
+                board.make_move(moves[a])
+                a +=1
                 player_turn = not player_turn
         draw(screen)
 

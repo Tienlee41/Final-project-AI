@@ -17,12 +17,13 @@ class Board:
 		self.width = width
 		self.height = height
 		self.player_side = player_side
+		self.player_turn = True if player_side == "white" else False
 
 		self.tile_width = width // 8
 		self.tile_height = height // 8
 		self.selected_piece = None
 		self.turn = 'white'
-		self.en_passant_target_square = None
+		self.move_count = 0
 
 		self.config_white_start = [
 			['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
@@ -51,9 +52,6 @@ class Board:
 
 	def get_player_side(self):
 		return self.player_side	
-
-	def set_en_passant_target_square(self, square):
-		self.en_passant_target_square = square
 
 	def generate_squares(self):
 		output = []
@@ -123,9 +121,7 @@ class Board:
 			for x in range(8):
 				square = self.get_square_from_pos((x, y))
 				if square.occupying_piece is not None:
-					piece = square.occupying_piece.color[0]
-					piece += square.occupying_piece.notation[0] if square.occupying_piece.notation != ' ' else 'P'
-					row.append(piece)
+					row.append(square.occupying_piece.color[0] + square.occupying_piece.notation)
 				else:
 					row.append('')
 			board_state.append(row)
@@ -155,10 +151,8 @@ class Board:
 				self.selected_piece = clicked_square.occupying_piece
 
 		elif self.selected_piece.move(self, clicked_square):
-			if type(clicked_square.occupying_piece) == Pawn:
-				print(clicked_square.occupying_piece.has_moved)
-				clicked_square.occupying_piece.has_moved = True
 			self.selected_piece = None
+			self.player_turn = False
 			return True
 		elif clicked_square.occupying_piece is not None and clicked_square.occupying_piece == self.selected_piece:
     
@@ -239,6 +233,80 @@ class Board:
 		# Nếu không có bất kỳ nước đi nào cho bất kỳ quân cờ nào và vua vẫn bị tấn công, là checkmate
 		return True
 
+	def is_stalemate(self, color):
+	    # insufficient material
+		if self.is_insufficient_material():
+			return True
+
+		# Kiểm tra hòa do hết nước đi (PAT)
+		if self.is_pat(color):
+			return True
+
+		# Kiểm tra hòa do bất biến 3 lần
+		if self.is_threefold_repetition():
+			return True
+
+		# Kiểm tra hòa cờ sau 50 nước
+		if self.is_fifty_move_rule():
+			return True
+
+		return False
+
+	def is_insufficient_material(self):
+		# 
+		if len([square for square in self.squares if square.occupying_piece is not None]) == 2:
+			return True
+		elif len([square for square in self.squares if square.occupying_piece is not None]) == 3:
+			p = [square.occupying_piece for square in self.squares if square.occupying_piece is not None  and  square.occupying_piece[1] != "K" ][1]
+			if p == 'N' or 'B':
+				return True
+		return False
+
+	def is_pat(self, color):
+		# Kiểm tra xem có còn nước đi hợp lệ cho bên đi hoặc không
+		if any(self.get_valid_moves(square.occupying_piece) for square in self.squares if square.occupying_piece is not None and square.occupying_piece.color == color):
+			return False
+		# Kiểm tra xem vua của bên đi có bị chiếu hết không
+		if self.is_in_check(color):
+			return False
+
+		return True
+
+	def is_threefold_repetition(self):
+		previous_board_states = []
+		for state in previous_board_states:
+			if state == self.get_board_state():
+				# Nếu trạng thái hiện tại giống với một trong các trạng thái trước đó, tăng biến đếm
+				count = 0
+				for previous_state in previous_board_states:
+					if previous_state == state:
+						count += 1
+				# Nếu trạng thái đã được lặp lại ba lần, trả về True
+				if count >= 3:
+					return True
+		return False 
+
+	def is_fifty_move_rule(self):
+    # Lấy số lần di chuyển đã thực hiện
+		move_count = self.get_move_count()
+
+		# Kiểm tra xem đã thực hiện đủ 50 nước cờ chưa
+		if move_count >= 100:
+			return True
+
+		# Kiểm tra xem trong 50 nước cờ gần nhất có nước Tốt nào được thực hiện hay không
+		for move in self.move_history[-50:]:
+			if move.piece.notation == 'P' or move.captured_piece is not None:
+				return False
+
+		# Nếu không có nước Tốt nào được thực hiện trong 50 nước cờ gần nhất và đã thực hiện ít nhất 50 nước cờ, trả về True
+		return True
+
+	def get_move_count(self):
+		# Lấy số lần di chuyển đã thực hiện từ lịch sử di chuyển
+		return len(self.move_history)
+
+
 	def move_piece(self, start_pos, end_pos):
 		start_square = self.get_square_from_pos(start_pos)
 		end_square = self.get_square_from_pos(end_pos)
@@ -279,52 +347,68 @@ class Board:
 		else :
 			return str(chr(ord('h')-x)+str(y+1))
 
-	def update_board(self, board_state):
-		for y in range(8):
-			for x in range(8):
-				piece = board_state[y][x]
-				square = self.get_square_from_pos((x, y))
-				if piece != '':
-					print(self.get_name_pos(x,y) + piece)
-					square.occupying_piece = None
+	def move_to_coordinate(self,s):
+			x = 8 - int(s[1])
+			y = ord(s[0])-ord('a')
+			return (y,x)
 
-					# Đặt quân cờ mới lên ô cờ
-					if piece[1] == 'R':
-						square.occupying_piece = Rook(
-							(x, y), 'white' if piece[0] == 'w' else 'black', self
-						)
-						print(str(square.coord) + piece)
-					elif piece[1] == 'N':
-						square.occupying_piece = Knight(
-							(x, y), 'white' if piece[0] == 'w' else 'black', self
-						)
-					elif piece[1] == 'B':
-						square.occupying_piece = Bishop(
-							(x, y), 'white' if piece[0] == 'w' else 'black', self
-						)
-					elif piece[1] == 'Q':
-						square.occupying_piece = Queen(
-							(x, y), 'white' if piece[0] == 'w' else 'black', self
-						)
-					elif piece[1] == 'K':
-						square.occupying_piece = King(
-							(x, y), 'white' if piece[0] == 'w' else 'black', self
-						)
-					elif piece == 'wP':
-						square.occupying_piece = Pawn(
-							(x, y), 'white', self
-						)
-						if self.player_side == "white":
-							if y != 6 : square.occupying_piece.has_moved = True
-						else :
-							if y != 1 : square.occupying_piece.has_moved = True
-					elif piece == 'bP':
-						square.occupying_piece = Pawn(
-							(x, y), 'black', self
-						)
-						if self.player_side == "white":
-							if y != 1 : square.occupying_piece.has_moved = True
-						else :
-							if y != 6 : square.occupying_piece.has_moved = True
-				else:
-					square.occupying_piece = None
+	def make_move(self,move):
+		start = self.move_to_coordinate(move[0:2])
+		end = self.move_to_coordinate(move[2:4])
+		square_start = self.get_square_from_pos(start)
+		square_end = self.get_square_from_pos(end)
+		square_end.occupying_piece = square_start.occupying_piece
+		square_end.occupying_piece.pos = end
+		square_start.occupying_piece = None
+		self.player_turn = True
+
+
+	# def update_board(self, board_state):
+	# 	for y in range(8):
+	# 		for x in range(8):
+	# 			piece = board_state[y][x]
+	# 			square = self.get_square_from_pos((x, y))
+	# 			if piece != '':
+	# 				print(self.get_name_pos(x,y) + piece)
+	# 				square.occupying_piece = None
+
+	# 				# Đặt quân cờ mới lên ô cờ
+	# 				if piece[1] == 'R':
+	# 					square.occupying_piece = Rook(
+	# 						(x, y), 'white' if piece[0] == 'w' else 'black', self
+	# 					)
+	# 					print(str(square.coord) + piece)
+	# 				elif piece[1] == 'N':
+	# 					square.occupying_piece = Knight(
+	# 						(x, y), 'white' if piece[0] == 'w' else 'black', self
+	# 					)
+	# 				elif piece[1] == 'B':
+	# 					square.occupying_piece = Bishop(
+	# 						(x, y), 'white' if piece[0] == 'w' else 'black', self
+	# 					)
+	# 				elif piece[1] == 'Q':
+	# 					square.occupying_piece = Queen(
+	# 						(x, y), 'white' if piece[0] == 'w' else 'black', self
+	# 					)
+	# 				elif piece[1] == 'K':
+	# 					square.occupying_piece = King(
+	# 						(x, y), 'white' if piece[0] == 'w' else 'black', self
+	# 					)
+	# 				elif piece == 'wP':
+	# 					square.occupying_piece = Pawn(
+	# 						(x, y), 'white', self
+	# 					)
+	# 					if self.player_side == "white":
+	# 						if y != 6 : square.occupying_piece.has_moved = True
+	# 					else :
+	# 						if y != 1 : square.occupying_piece.has_moved = True
+	# 				elif piece == 'bP':
+	# 					square.occupying_piece = Pawn(
+	# 						(x, y), 'black', self
+	# 					)
+	# 					if self.player_side == "white":
+	# 						if y != 1 : square.occupying_piece.has_moved = True
+	# 					else :
+	# 						if y != 6 : square.occupying_piece.has_moved = True
+	# 			else:
+	# 				square.occupying_piece = None

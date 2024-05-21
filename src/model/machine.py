@@ -76,36 +76,16 @@ class Machine:
                                 "wP": self.pawn_scores,
                                 "bP": self.pawn_scores[::-1]}
     
-    def move_to_coordinate(self,s):
-        x = 8 - int(s[3])
-        y = ord(s[2])-ord('a')
-        return (x,y)
+    
 
-    def make_move(self, board):
-        # 1 move có dạng : e3xe7 hoặc e3e5 (x là ăn)
-        # move = self.findMoveMegaMaxAlphaBeta(board_state)
-        # if ("x" in move):
-        #     ewq
-        # else :
-        moves = "e7e5"
-        atmoves = "bPe5xd4"
-        new_board_state = board.get_board_state()
-        #move = 
-        new_board_state[self.move_to_coordinate(moves[-2])[0]][self.move_to_coordinate(moves[-2])[1]] = new_board_state[self.move_to_coordinate(moves[2:4])[0]][self.move_to_coordinate(moves[2:4])[1]]
-            # test 1 nuoc di
-        # if self.machine_side == "black":
-        #     if self.a == 0:
-        #         new_board_state[1][7] = ''
-        #         new_board_state[2][7] = 'bP'
-        #         new_board_state[3][2] = 'bP'
-        #         self.a +=1 
-        #     else :
-        #         new_board_state[1][4] = ''
-        #         new_board_state[3][4] = 'bP'
-        # else :
-        #     new_board_state[1][7] = ''
-        #     new_board_state[2][7] = 'wP '
-        return new_board_state
+    def find_best_move(self, board,valid_moves,moves_queue):
+        global next_move
+        next_move = None
+        #random.shuffle(valid_moves)
+        #print(type(valid_moves[0]))
+        self.MegaMaxAlphaBeta(board, valid_moves,1 if board.player_turn else -1)
+        #print(next_move.start_row,next_move.start_col,next_move.end_row,next_move.end_col)
+        moves_queue.put(next_move)
     
     def score(self,board_state):
         if board_state.is_in_checkmate(self.machine_side):
@@ -128,8 +108,18 @@ class Machine:
     
     
     
-    def findMoveMegaMaxAlphaBeta(self,board_states):
-        pass
+    def MegaMaxAlphaBeta(self,board,valid_moves,depth,alpha,beta,turn):
+        global next_move
+        if depth == 0:
+            return (1 if turn == self.machine_side else -1) * self.score(board.get_board_state())
+        max_score = -self.checkmate
+        for move in valid_moves:
+            new_board_state = self.make_move(move)
+            next_moves = board
+        
+        
+        
+        return max_score
     
     def randomMove(valid_moves):
         return random.choice(valid_moves)

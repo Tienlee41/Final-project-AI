@@ -11,9 +11,7 @@ class Pawn(Piece):
     def __init__(self, pos, color, board):
         super().__init__(pos, color, board)
         self.move_direction = 1 if board.get_player_side() == "white" else -1  # Hướng di chuyển của quân tốt
-        self.en_passant_move = False  # Thuộc tính để đánh dấu nước đi en passant
-        self.can_be_taken_en_passant = False  # Cho biết liệu tốt này có thể bị bắt qua đường không
-
+        
         img_path = 'res/images/' + color[0] + '_pawn.png'
         self.img = pygame.image.load(img_path)
         self.img = pygame.transform.scale(self.img, (board.tile_width - 20, board.tile_height - 20))
@@ -60,39 +58,10 @@ class Pawn(Piece):
         for square in diagonal_moves:
             output.append(square)
 
-        # Kiểm tra bắt tốt qua đường
-        en_passant_moves = self.en_passant_moves(board)
-        for square in en_passant_moves:
-            output.append(square)
+
 
         return output
     
-    def en_passant_moves(self, board):
-        output = []
-
-        # Lấy vị trí mục tiêu cho en passant
-        target_square = board.en_passant_target_square
-
-        if target_square is not None:
-            target_x, target_y = target_square.x, target_square.y
-
-            # Kiểm tra xem en passant có thể thực hiện về bên trái không
-            if self.x - 1 == target_x and abs(self.y - target_y) == 1:
-                # Tạo ô đích cho en passant
-                destination_square = board.get_square_from_pos((self.x - 1, self.y))
-                output.append(destination_square)
-                # Đánh dấu là nước đi en passant
-                destination_square.en_passant_move = True
-
-            # Kiểm tra xem en passant có thể thực hiện về bên phải không
-            elif self.x + 1 == target_x and abs(self.y - target_y) == 1:
-                # Tạo ô đích cho en passant
-                destination_square = board.get_square_from_pos((self.x + 1, self.y))
-                output.append(destination_square)
-                # Đánh dấu là nước đi en passant
-                destination_square.en_passant_move = True
-
-        return output
 
     def promote(self, board):
         chosen_piece = self.display_promotion_options(self.color)
@@ -174,31 +143,4 @@ class Pawn(Piece):
             if square.occupying_piece is not None and square.occupying_piece.color != self.color:
                 output.append(square)
 
-        # Kiểm tra bắt tốt qua đường
-        if self.can_be_taken_en_passant:
-            # Nếu tốt này có thể bị bắt qua đường, thêm các ô đích vào danh sách nước đi
-            if self.color == 'white':
-                target_square = board.get_square_from_pos((self.x, self.y - 1))
-                if target_square is not None and target_square.occupying_piece is not None and target_square.occupying_piece.color != self.color:
-                    output.append(target_square)
-            elif self.color == 'black':
-                target_square = board.get_square_from_pos((self.x, self.y + 1))
-                if target_square is not None and target_square.occupying_piece is not None and target_square.occupying_piece.color != self.color:
-                    output.append(target_square)
-
         return output
-
-    def update_can_be_taken_en_passant(self, board):
-        if self.color == 'white':
-            target_square = board.get_square_from_pos((self.x, self.y - 2))
-        elif self.color == 'black':
-            target_square = board.get_square_from_pos((self.x, self.y + 2))
-        if target_square is not None and target_square.occupying_piece is not None and target_square.occupying_piece.color != self.color:
-            # Nếu có tốt đối phương nằm ngay bên cạnh và có thể bắt qua đường, đặt thuộc tính can_be_taken_en_passant thành True
-            self.can_be_taken_en_passant = True
-            ## if không bị bắt ngay sau đó thì can_be_taken_en_passant = False
-        else:
-            self.can_be_taken_en_passant = False
-    
-    def copy(self, new_board):
-        return type(self)(self.pos, self.color, new_board)
