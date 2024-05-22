@@ -1,8 +1,4 @@
-"""
-Main driver file.
-Handling user input.
-Displaying current GameStatus object.
-"""
+
 import pygame as p
 import ChessEngine, ChessAI
 import sys
@@ -25,10 +21,7 @@ background_image = p.transform.scale(background_image, WINDOW_SIZE)
 
 
 def loadImages():
-    """
-    Initialize a global directory of images.
-    This will be called exactly once in the main.
-    """
+    
     pieces = ['wp', 'wR', 'wN', 'wB', 'wK', 'wQ', 'bp', 'bR', 'bN', 'bB', 'bK', 'bQ']
     for piece in pieces:
         IMAGES[piece] = p.transform.scale(p.image.load("images/" + piece + ".png"), (SQUARE_SIZE, SQUARE_SIZE))
@@ -137,10 +130,7 @@ def draw_end_game_blackwin():
 
 
 def main():
-    """
-    The main driver for our code.
-    This will handle user input and updating the graphics.
-    """
+    
     p.init()
     screen = p.display.set_mode((BOARD_WIDTH, BOARD_HEIGHT))
     clock = p.time.Clock()
@@ -259,21 +249,16 @@ def main():
 
 
 def drawGameState(screen, game_state, valid_moves, square_selected):
-    """
-    Responsible for all the graphics within current game state.
-    """
+    
     drawBoard(screen)  # draw squares on the board
     highlightSquares(screen, game_state, valid_moves, square_selected)
     drawPieces(screen, game_state.board)  # draw pieces on top of those squares
 
 
 def drawBoard(screen):
-    """
-    Draw the squares on the board.
-    The top left square is always light.
-    """
+    
     global colors
-    colors = [p.Color("white"), p.Color("gray")]
+    colors = [p.Color(234, 235, 200), p.Color(119, 154, 88)]
     for row in range(DIMENSION):
         for column in range(DIMENSION):
             color = colors[((row + column) % 2)]
@@ -281,9 +266,7 @@ def drawBoard(screen):
 
 
 def highlightSquares(screen, game_state, valid_moves, square_selected):
-    """
-    Highlight square selected and moves for piece selected.
-    """
+    
     if (len(game_state.move_log)) > 0:
         last_move = game_state.move_log[-1]
         s = p.Surface((SQUARE_SIZE, SQUARE_SIZE))
@@ -307,9 +290,7 @@ def highlightSquares(screen, game_state, valid_moves, square_selected):
 
 
 def drawPieces(screen, board):
-    """
-    Draw the pieces on the board using the current game_state.board
-    """
+    
     for row in range(DIMENSION):
         for column in range(DIMENSION):
             piece = board[row][column]
@@ -318,10 +299,7 @@ def drawPieces(screen, board):
 
 
 def drawMoveLog(screen, game_state, font):
-    """
-    Draws the move log.
-
-    """
+    
     move_log_rect = p.Rect(BOARD_WIDTH, 0, MOVE_LOG_PANEL_WIDTH, MOVE_LOG_PANEL_HEIGHT)
     p.draw.rect(screen, p.Color('black'), move_log_rect)
     move_log = game_state.move_log
@@ -359,9 +337,7 @@ def drawEndGameText(screen, text):
 
 
 def animateMove(move, screen, board, clock):
-    """
-    Animating a move
-    """
+    
     global colors
     d_row = move.end_row - move.start_row
     d_col = move.end_col - move.start_col
