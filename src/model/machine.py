@@ -1,5 +1,6 @@
 import pygame
 import random
+import queue
 from pieces.Piece import Piece
 from pieces.Rook import Rook
 from pieces.Bishop import Bishop
@@ -18,7 +19,7 @@ class Machine:
         piece_score = {"K": 0, "Q": 9, "R": 5, "B": 3, "N": 3, "p": 1}
         self.checkmate = 1000
         self.stalemate = 0
-        self.depth = 5
+        self.depth = 3
 
         self.knight_scores = [[0.0, 0.1, 0.2, 0.2, 0.2, 0.2, 0.1, 0.0],
                         [0.1, 0.3, 0.5, 0.5, 0.5, 0.5, 0.3, 0.1],
@@ -90,7 +91,7 @@ class Machine:
     def score(self,board_state):
         if board_state.is_in_checkmate(self.machine_side):
             return -self.checkmate
-        elif board_state.is_in_checkmate(play):
+        elif board_state.is_in_checkmate(self.player_side):
             return self.checkmate
         score = 0
         for x in range(8):
@@ -115,10 +116,12 @@ class Machine:
         max_score = -self.checkmate
         for move in valid_moves:
             new_board_state = self.make_move(move)
-            next_moves = board
-        
-        
-        
+            next_moves = new_board_state.get_valid_moves()
+            score = -self.MegaMaxAlphaBeta(new_board_state, next_moves, depth-1, -alpha, -beta, -turn)
+            if score > max_score:
+                max_score = score
+                if depth == self.depth:
+                    next_move = move
         return max_score
     
     def randomMove(valid_moves):

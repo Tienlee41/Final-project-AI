@@ -1,4 +1,3 @@
-import pygame
 
 from Square import Square
 from pieces.Rook import Rook
